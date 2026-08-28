@@ -1,4 +1,4 @@
-name: Validate Docs Folder
+name: Validate Docs Folder and Files
 
 on:
   push:
@@ -13,12 +13,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Verify docs folder exists
+      - name: Verify docs folder and required files
         run: |
           if [ ! -d "./docs" ]; then
             echo "❌ Docs folder missing!"
             exit 1
+          fi
+
+          missing=false
+
+          for file in ERD.png endpoint-plan.md database.sql; do
+            if [ ! -f "./docs/$file" ]; then
+              echo "❌ Missing $file in docs folder!"
+              missing=true
+            else
+              echo "✅ Found $file"
+            fi
+          done
+
+          if [ "$missing" = true ]; then
+            exit 1
           else
-            echo "✅ Docs folder found."
+            echo "🎉 All required files are present!"
           fi
 
