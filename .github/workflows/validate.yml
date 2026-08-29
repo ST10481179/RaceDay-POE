@@ -22,7 +22,7 @@ jobs:
 
           missing=false
 
-          for file in ERD.png database.sql; do
+          for file in ERD.png endpoint-plan.md database.sql; do
             if [ ! -f "./docs/$file" ]; then
               echo "❌ Missing $file in docs folder!"
               missing=true
