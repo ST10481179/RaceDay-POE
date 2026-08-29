@@ -27,6 +27,7 @@ It includes the ERD, API endpoint plan, and SQL database script.
 ## Repository Structure
 ### /docs
 - ERD.png
+- POE ERD.pdf
 - endpoint-plan.md
 - database.sql  
 ### /src
