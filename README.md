@@ -43,7 +43,7 @@ A GitHub Actions workflow (`validate.yml`) is configured to:
 - Verify that `ERD.png`, `endpoint-plan.md`, and `database.sql` are present
 
 ✅ Screenshot of successful green build:  
-
+![CI/CD Workflow Screenshot](docs/Screenshot%202026-08-30%20100441.png)
 
 ---
 
