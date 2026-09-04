@@ -42,14 +42,14 @@ A GitHub Actions workflow (`validate.yml`) is configured to:
 - Check that the `/docs` folder exists
 - Verify that `ERD.png`, `endpoint-plan.md`, and `database.sql` are present
 
-✅ Screenshot of successful green build:  
+Screenshot of successful green build:  
 ![CI/CD Workflow Screenshot](docs/Screenshot%202026-08-30%20100441.png)
 
 ---
 
 ## Video Presentation
 Unlisted YouTube link:  
-👉 [Insert your video link here]
+
 
 The video demonstrates:
 - ERD design decisions
