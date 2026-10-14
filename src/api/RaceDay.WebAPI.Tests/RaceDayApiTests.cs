@@ -29,8 +29,7 @@ public sealed class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
             email,
             password = "RaceDay1234!",
             role = "Participant",
-            firstName = "Ava",
-            lastName = "Runner",
+            fullName = "Ava Runner",
             age = 24
         });
 
@@ -41,7 +40,7 @@ public sealed class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
 
         var login = await client.PostAsJsonAsync("/api/auth/login", new
         {
-            userName = email,
+            email,
             password = "RaceDay1234!"
         });
         Assert.Equal(HttpStatusCode.OK, login.StatusCode);

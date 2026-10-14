@@ -16,11 +16,14 @@ public sealed class RegisterRequest
     [Required]
     public string Role { get; init; } = string.Empty;
 
-    [Required, MaxLength(100)]
-    public string FirstName { get; init; } = string.Empty;
+    [MaxLength(100)]
+    public string? FirstName { get; init; }
 
-    [Required, MaxLength(100)]
-    public string LastName { get; init; } = string.Empty;
+    [MaxLength(100)]
+    public string? LastName { get; init; }
+
+    [MaxLength(201)]
+    public string? FullName { get; init; }
 
     [Range(1, 120)]
     public int? Age { get; init; }
@@ -28,8 +31,11 @@ public sealed class RegisterRequest
 
 public sealed class LoginRequest
 {
-    [Required]
-    public string UserName { get; init; } = string.Empty;
+    [MaxLength(256)]
+    public string? UserName { get; init; }
+
+    [EmailAddress, MaxLength(100)]
+    public string? Email { get; init; }
 
     [Required]
     public string Password { get; init; } = string.Empty;

@@ -14,6 +14,7 @@ public sealed class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Ap
             .AddEnvironmentVariables()
             .Build();
         var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? configuration.GetConnectionString("RaceDayDb")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()

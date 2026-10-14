@@ -14,6 +14,7 @@ namespace RaceDay.WebAPI.Controllers;
 [Route("api/auth")]
 public sealed class AuthController(
     UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
     RoleManager<IdentityRole> roleManager,
     ApplicationDbContext dbContext,
     IConfiguration configuration) : ControllerBase
@@ -33,6 +34,12 @@ public sealed class AuthController(
         if (role == "Participant" && request.Age is null)
         {
             return BadRequest(new { error = "Age is required for participants." });
+        }
+
+        var (firstName, lastName) = ResolveName(request);
+        if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+        {
+            return BadRequest(new { error = "Provide FirstName and LastName, or a FullName containing both." });
         }
 
         var userName = string.IsNullOrWhiteSpace(request.UserName) ? request.Email : request.UserName.Trim();
@@ -55,8 +62,8 @@ public sealed class AuthController(
         {
             UserName = userName,
             Email = request.Email,
-            FirstName = request.FirstName.Trim(),
-            LastName = request.LastName.Trim(),
+            FirstName = firstName,
+            LastName = lastName,
             Age = request.Age
         };
         var createResult = await userManager.CreateAsync(user, request.Password);
@@ -102,9 +109,18 @@ public sealed class AuthController(
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
-        var user = await userManager.FindByNameAsync(request.UserName)
-            ?? await userManager.FindByEmailAsync(request.UserName);
-        if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
+        var identifier = string.IsNullOrWhiteSpace(request.UserName) ? request.Email : request.UserName;
+        if (string.IsNullOrWhiteSpace(identifier))
+        {
+            return BadRequest(new { error = "Provide a username or email address." });
+        }
+
+        var user = await userManager.FindByNameAsync(identifier)
+            ?? await userManager.FindByEmailAsync(identifier);
+        var signInResult = user is null
+            ? null
+            : await signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        if (user is null || signInResult is null || !signInResult.Succeeded)
         {
             return Unauthorized(new { error = "Invalid username or password." });
         }
@@ -124,6 +140,7 @@ public sealed class AuthController(
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName ?? user.Email ?? user.Id),
             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
@@ -137,5 +154,16 @@ public sealed class AuthController(
 
         return new AuthResponse(user.Id, user.UserName ?? string.Empty, role,
             new JwtSecurityTokenHandler().WriteToken(token), expiresAt);
+    }
+
+    private static (string FirstName, string LastName) ResolveName(RegisterRequest request)
+    {
+        if (!string.IsNullOrWhiteSpace(request.FirstName) && !string.IsNullOrWhiteSpace(request.LastName))
+        {
+            return (request.FirstName.Trim(), request.LastName.Trim());
+        }
+
+        var parts = request.FullName?.Split(' ', 2, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        return parts is { Length: 2 } ? (parts[0], parts[1]) : (string.Empty, string.Empty);
     }
 }
