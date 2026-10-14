@@ -15,23 +15,20 @@ namespace RaceDay.WebAPI.Controllers;
 public sealed class AuthController(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    RoleManager<IdentityRole> roleManager,
     ApplicationDbContext dbContext,
     IConfiguration configuration) : ControllerBase
 {
-    private static readonly string[] AllowedRoles = ["Organiser", "Participant"];
-
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-        var role = AllowedRoles.FirstOrDefault(value =>
-            string.Equals(value, request.Role, StringComparison.OrdinalIgnoreCase));
-        if (role is null)
+        if (!string.IsNullOrWhiteSpace(request.Role) &&
+            !string.Equals(request.Role, "Participant", StringComparison.OrdinalIgnoreCase))
         {
-            return BadRequest(new { error = "Role must be Organiser or Participant." });
+            return BadRequest(new { error = "Public registration only creates Participant accounts." });
         }
 
-        if (role == "Participant" && request.Age is null)
+        const string role = "Participant";
+        if (request.Age is null)
         {
             return BadRequest(new { error = "Age is required for participants." });
         }
@@ -49,15 +46,6 @@ public sealed class AuthController(
             return Conflict(new { error = "An account with that email or username already exists." });
         }
 
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            var roleResult = await roleManager.CreateAsync(new IdentityRole(role));
-            if (!roleResult.Succeeded)
-            {
-                return Problem("The requested role could not be initialized.");
-            }
-        }
-
         var user = new ApplicationUser
         {
             UserName = userName,
@@ -66,6 +54,7 @@ public sealed class AuthController(
             LastName = lastName,
             Age = request.Age
         };
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
         var createResult = await userManager.CreateAsync(user, request.Password);
         if (!createResult.Succeeded)
         {
@@ -75,34 +64,30 @@ public sealed class AuthController(
         var addRoleResult = await userManager.AddToRoleAsync(user, role);
         if (!addRoleResult.Succeeded)
         {
-            await userManager.DeleteAsync(user);
-            return Problem("The account role could not be assigned.");
+            return Problem("The Participant role could not be assigned.");
         }
 
-        if (role == "Participant")
+        var participant = await dbContext.Participants.SingleOrDefaultAsync(
+            value => value.Email == request.Email);
+        if (participant is null)
         {
-            var participant = await dbContext.Participants.SingleOrDefaultAsync(
-                value => value.Email == request.Email);
-            if (participant is null)
-            {
-                participant = new Participant { Email = request.Email };
-                dbContext.Participants.Add(participant);
-            }
-
-            participant.FirstName = user.FirstName;
-            participant.LastName = user.LastName;
-            participant.Age = request.Age!.Value;
-            try
-            {
-                await dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                await userManager.DeleteAsync(user);
-                return Conflict(new { error = "A participant with that email already exists." });
-            }
+            participant = new Participant { Email = request.Email };
+            dbContext.Participants.Add(participant);
         }
 
+        participant.FirstName = user.FirstName;
+        participant.LastName = user.LastName;
+        participant.Age = request.Age.Value;
+        try
+        {
+            await dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict(new { error = "A participant with that email already exists." });
+        }
+
+        await transaction.CommitAsync();
         return StatusCode(StatusCodes.Status201Created, await CreateAuthResponse(user, role));
     }
 

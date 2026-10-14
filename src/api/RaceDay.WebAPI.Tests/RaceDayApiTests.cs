@@ -62,6 +62,17 @@ public sealed class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
         });
         Assert.Equal(HttpStatusCode.BadRequest, invalidRole.StatusCode);
 
+        var organiserSelfRegistration = await client.PostAsJsonAsync("/api/auth/register", new
+        {
+            email = NewEmail(),
+            password = "RaceDay1234!",
+            role = "Organiser",
+            firstName = "Ava",
+            lastName = "Runner",
+            age = 24
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, organiserSelfRegistration.StatusCode);
+
         var swagger = await client.GetAsync("/swagger/v1/swagger.json");
         Assert.Equal(HttpStatusCode.OK, swagger.StatusCode);
     }
@@ -196,12 +207,27 @@ public sealed class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
 
     private async Task<(string UserId, string Token, int ParticipantId)> Register(string role)
     {
+        if (role == "Organiser")
+        {
+            using var organiserLogin = await client.PostAsJsonAsync("/api/auth/login", new
+            {
+                email = "organiser@raceday.test",
+                password = "RaceDay1234!"
+            });
+            Assert.Equal(HttpStatusCode.OK, organiserLogin.StatusCode);
+            using var organiserBody = JsonDocument.Parse(await organiserLogin.Content.ReadAsStringAsync());
+            return (
+                organiserBody.RootElement.GetProperty("userId").GetString()!,
+                organiserBody.RootElement.GetProperty("token").GetString()!,
+                0);
+        }
+
         var email = NewEmail();
         var response = await client.PostAsJsonAsync("/api/auth/register", new
         {
             email,
             password = "RaceDay1234!",
-            role,
+            role = "Participant",
             firstName = "Casey",
             lastName = "Athlete",
             age = 30
@@ -211,16 +237,12 @@ public sealed class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
         var userId = body.RootElement.GetProperty("userId").GetString()!;
         var token = body.RootElement.GetProperty("token").GetString()!;
 
-        var participantId = 0;
-        if (role == "Participant")
-        {
-            using var scope = factory.Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            participantId = await dbContext.Participants
-                .Where(value => value.Email == email)
-                .Select(value => value.ParticipantID)
-                .SingleAsync();
-        }
+        using var scope = factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var participantId = await dbContext.Participants
+            .Where(value => value.Email == email)
+            .Select(value => value.ParticipantID)
+            .SingleAsync();
 
         return (userId, token, participantId);
     }

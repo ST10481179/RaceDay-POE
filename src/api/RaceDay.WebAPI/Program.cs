@@ -81,6 +81,11 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    await RoleSeeder.SeedAsync(scope.ServiceProvider, app.Configuration);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

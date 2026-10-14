@@ -13,8 +13,7 @@ public sealed class RegisterRequest
     [Required, MinLength(8)]
     public string Password { get; init; } = string.Empty;
 
-    [Required]
-    public string Role { get; init; } = string.Empty;
+    public string? Role { get; init; }
 
     [MaxLength(100)]
     public string? FirstName { get; init; }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using RaceDay.WebAPI.Data;
+using RaceDay.WebAPI.Models;
 using Xunit;
 
 namespace RaceDay.WebAPI.Tests;
@@ -32,10 +34,40 @@ public sealed class RaceDayApiFactory : WebApplicationFactory<Program>, IAsyncLi
     public async Task InitializeAsync()
     {
         await connection.OpenAsync();
+
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlite(connection)
+            .Options;
+        await using (var dbContext = new ApplicationDbContext(options))
+        {
+            await dbContext.Database.EnsureCreatedAsync();
+        }
+
         using var client = CreateClient();
+
         using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var organiser = new ApplicationUser
+        {
+            UserName = "organiser@raceday.test",
+            Email = "organiser@raceday.test",
+            EmailConfirmed = true,
+            FirstName = "RaceDay",
+            LastName = "Organiser"
+        };
+        var createResult = await userManager.CreateAsync(organiser, "RaceDay1234!");
+        if (!createResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"Could not create the test Organiser: {string.Join("; ", createResult.Errors.Select(error => error.Description))}");
+        }
+
+        var roleResult = await userManager.AddToRoleAsync(organiser, "Organiser");
+        if (!roleResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"Could not assign the test Organiser role: {string.Join("; ", roleResult.Errors.Select(error => error.Description))}");
+        }
     }
 
     public new async Task DisposeAsync()

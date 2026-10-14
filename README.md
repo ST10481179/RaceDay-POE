@@ -46,17 +46,23 @@ A GitHub Actions workflow (`ci.yml`) restores, builds, and tests the .NET 10 API
 Screenshot of a successful green Part 1 documentation workflow run:
 ![CI/CD Workflow Screenshot](docs/Screenshot%202026-09-03%20153637.png)
 
+The Part 2 workflow status is shown by the badge above and its [GitHub Actions runs](https://github.com/ST10481179/RaceDay-POE/actions/workflows/ci.yml?query=branch%3Apart2-api).
+
 ## Part 2 API
 
 The API uses ASP.NET Identity for hashed passwords and roles, JWT bearer authentication, SQL Server, and EF Core Code-First migrations. Organiser and Participant permissions are enforced by authorization policies. Swagger is available at `/swagger` in Development.
 
-The database connection is configured in `src/api/RaceDay.WebAPI/appsettings.json`. Set the JWT signing key using User Secrets for local development:
+Public registration always creates a Participant; Organiser accounts cannot be self-assigned. Both roles are seeded at startup after applying the EF migrations. To create the initial Organiser, set a dedicated bootstrap account in User Secrets (never commit its password):
 
 ```powershell
 dotnet user-secrets set "Jwt:Key" "<random secret of at least 32 bytes>" --project src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj
-dotnet-ef database update --project src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj
+dotnet user-secrets set "BootstrapOrganiser:Email" "<organiser email>" --project src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj
+dotnet user-secrets set "BootstrapOrganiser:Password" "<strong password>" --project src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj
+dotnet ef database update --project src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj
 dotnet run --project src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj
 ```
+
+The default SQL Server connection string is `Server=TANKISO\SQLEXPRESS;Database=RaceDayDb;Trusted_Connection=True;Encrypt=False;MultipleActiveResultSets=true`; override it with `ConnectionStrings:DefaultConnection` when using another SQL Server instance.
 
 Apply EF migrations to a blank `RaceDayDb`; do not run `docs/database.sql` first, because that Part 1 script creates the same domain tables. The script remains the reference schema/seed artifact, and the API migration creates the mapped ERD tables plus Identity tables.
 
