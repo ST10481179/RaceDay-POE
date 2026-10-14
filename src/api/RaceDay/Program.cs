@@ -11,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
@@ -20,7 +21,40 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate(); // Apply any pending migrations to the
-}
+
+    var rolmanager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new[] { "Admin", "User", "Participant" };
+    
+    
+    foreach (var role in roles)
+    {
+        if (!await rolmanager.RoleExistsAsync(role))
+        {
+            await rolmanager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    string email = "admin@example.com";
+    string password = "Admin@123"; // Ensure this meets your password
+
+    if(await userManager.FindByEmailAsync(email) == null)
+    {
+        var user = new IdentityUser();
+
+        user.UserName = email;
+        user.Email = email;
+        user.EmailConfirmed = true; // Set to true if you want to bypass email confirmation
+        
+            await userManager.CreateAsync(user,password);
+            await userManager.AddToRoleAsync(user, "Admin");
+    }
+
+  }
+
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
