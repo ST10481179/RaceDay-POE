@@ -7,6 +7,6 @@
         public int Position { get; set; }
 
         public int EnrollmentID { get; set; }
-        public Enrollment Enrollment { get; set; }
+        public Enrollment? Enrollment { get; set; }
     }
 }

@@ -8,7 +8,7 @@
         public string? AgeRange { get; set; }
 
         public int EventID { get; set; }
-        public Event Event { get; set; }
+        public Event? Event { get; set; }
 
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Race> Races { get; set; } = new List<Race>();
