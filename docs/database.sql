@@ -1,6 +1,6 @@
-CREATE DATABASE RaceDay;
+CREATE DATABASE RaceDayDb;
 GO
-USE RaceDay;
+USE RaceDayDb;
 GO
 
 -- Participant Table
