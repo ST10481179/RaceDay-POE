@@ -1,10 +1,10 @@
-name: .NET Build and Test
+name: RaceDay API CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, part2-api ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, part2-api ]
 
 jobs:
   build:
@@ -12,18 +12,18 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
 
     - name: Restore dependencies
-      run: dotnet restore src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj
+      run: dotnet restore src/api/RaceDay.WebAPI.Tests/RaceDay.WebAPI.Tests.csproj
 
-    - name: Build
-      run: dotnet build src/api/RaceDay.WebAPI/RaceDay.WebAPI.csproj --no-restore --configuration Release
+    - name: Build API and tests
+      run: dotnet build src/api/RaceDay.WebAPI.Tests/RaceDay.WebAPI.Tests.csproj --no-restore --configuration Release
 
     - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test src/api/RaceDay.WebAPI.Tests/RaceDay.WebAPI.Tests.csproj --no-build --configuration Release --verbosity minimal
