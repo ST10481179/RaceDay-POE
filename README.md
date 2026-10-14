@@ -46,7 +46,8 @@ A GitHub Actions workflow (`ci.yml`) restores, builds, and tests the .NET 10 API
 Screenshot of a successful green Part 1 documentation workflow run:
 ![CI/CD Workflow Screenshot](docs/Screenshot%202026-09-03%20153637.png)
 
-The Part 2 workflow status is shown by the badge above and its [GitHub Actions runs](https://github.com/ST10481179/RaceDay-POE/actions/workflows/ci.yml?query=branch%3Apart2-api).
+The Part 2 workflow status is shown by the badge above and its [GitHub Actions runs](https://github.com/ST10481179/RaceDay-POE/actions/workflows/ci.yml?query=branch%3Apart2-api). Screenshot of the successful run for commit `8e4f630`:
+![Successful Part 2 API CI build](docs/part2-api-ci-success.png)
 
 ## Part 2 API
 
