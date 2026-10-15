@@ -39,13 +39,13 @@ namespace RaceDay.Controllers
 
 
         // GET: /UserRoles/Edit/{userId}
-        public async Task<IActionResult> Manage(string userId)
+        public async Task<IActionResult> Manage(string id)
         {
-            ViewBag.userId = userId;
-            var user = await _userManager.FindByIdAsync(userId);
+            ViewBag.userId = id;
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found";
+                ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
                 return View("NotFound");
             }
             ViewBag.Username = user.UserName;
@@ -75,9 +75,9 @@ namespace RaceDay.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Manage(List<ManageUserRolesViewModel> model, string userId)
+        public async Task<IActionResult> Manage(List<ManageUserRolesViewModel> model, string id)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 return View();

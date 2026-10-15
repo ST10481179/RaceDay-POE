@@ -1,4 +1,4 @@
-﻿@model IEnumerable<RaceDay.Models.ViewModels.UserRoleViewModel>
+﻿@model IEnumerable<RaceDay.Models.ViewModels.UserRolesViewModel>
 @{
     ViewData["Title"] = "User Roles Management";
 }
@@ -20,10 +20,10 @@
             {
             <tr>
                 <td>@user.Email</td>
-                <td>@user.Username</td>
+                <td>@user.UserName</td>
                 <td>@string.Join(", ", user.Roles)</td>
                 <td>
-                    <a asp-action="Manage" asp-route-id="@user.Id" class="btn btn-danger btn-sm">Manage Roles</a>
+                    <a asp-action="Manage" asp-route-id="@user.UserId" class="btn btn-danger btn-sm">Manage Roles</a>
                 </td>
             </tr>
             }

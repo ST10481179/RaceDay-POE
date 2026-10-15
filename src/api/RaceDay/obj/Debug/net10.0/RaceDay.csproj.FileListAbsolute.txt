@@ -296,3 +296,4 @@ C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\n
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\net10.0\RaceDay.pdb
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\net10.0\RaceDay.genruntimeconfig.cache
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\net10.0\ref\RaceDay.dll
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
