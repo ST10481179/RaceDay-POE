@@ -39,7 +39,7 @@ namespace RaceDay.Controllers
 
 
         // GET: /UserRoles/Edit/{userId}
-        public async Task<IActionResult> Edit(string userId)
+        public async Task<IActionResult> Manage(string userId)
         {
             ViewBag.userId = userId;
             var user = await _userManager.FindByIdAsync(userId);
