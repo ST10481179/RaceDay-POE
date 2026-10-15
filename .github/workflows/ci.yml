@@ -1,4 +1,4 @@
-name: .NET Build and Test
+Build and Test
 
 on:
   push:
@@ -14,10 +14,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup .NET
+    - name: Setup .NET 10
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: '10.0.x'
 
     - name: Restore dependencies
       run: dotnet restore src/api/RaceDay/RaceDay.csproj
