@@ -20,10 +20,10 @@ namespace RaceDay.Areas.Identity.Pages.Account;
 
 public class LoginModel : PageModel
 {
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LoginModel> _logger;
 
-    public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+    public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
     {
         _signInManager = signInManager;
         _logger = logger;
@@ -112,31 +112,26 @@ public class LoginModel : PageModel
         {
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-
+            var  result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+            
             if (result.Succeeded)
             {
-                if(User.IsInRole("Admin"))
+                if (User.IsInRole("Admin"))
                 {
-                    _logger.LogInformation("User logged in.");
-                    return RedirectToAction("AdminDashboard", "Home");
-
+                    _logger.LogInformation("User Admin logged in.");
+                    return RedirectToAction("AdminDashboard","Home");
                 }
-                  else if (User.IsInRole("Participant"))
-            {
-                _logger.LogInformation("User participant logged in.");
+                else if (User.IsInRole("Participant"))
+                {
+                    _logger.LogInformation("User Participant logged in.");
                     return RedirectToPage("./Manage/Index");
-            }
-                else if (User.IsInRole("Organizer"))
-                {
-                    _logger.LogInformation("user Organizerlogged in.");
-                    return RedirectToAction("OrganizerDashboard", "Home");
-
                 }
-
-                    
+                else if (User.IsInRole("Organiser"))
+                {
+                    _logger.LogInformation("User Organiser logged in.");
+                    return RedirectToAction("OrganiserDashboard", "Home");
+                }
             }
-
             if (result.RequiresTwoFactor)
             {
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });

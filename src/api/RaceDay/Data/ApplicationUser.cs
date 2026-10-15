@@ -21,7 +21,7 @@ public class ApplicationUser : IdentityUser
     public Gender Gender { get; set; }
 
     [MaxLength(250)]
-    public string ProfileImagePath { get; set; }
+    public string? ProfileImagePath { get; set; }
 
     public string FullName => $"{FirstName} {LastName}";
 }
