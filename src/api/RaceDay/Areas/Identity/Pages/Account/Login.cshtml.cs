@@ -113,11 +113,30 @@ public class LoginModel : PageModel
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
             if (result.Succeeded)
             {
-                _logger.LogInformation("User logged in.");
-                return LocalRedirect(returnUrl);
+                if(User.IsInRole("Admin"))
+                {
+                    _logger.LogInformation("User logged in.");
+                    return RedirectToAction("AdminDashboard", "Home");
+
+                }
+                  else if (User.IsInRole("Participant"))
+            {
+                _logger.LogInformation("User participant logged in.");
+                    return RedirectToPage("./Manage/Index");
             }
+                else if (User.IsInRole("Organizer"))
+                {
+                    _logger.LogInformation("user Organizerlogged in.");
+                    return RedirectToAction("OrganizerDashboard", "Home");
+
+                }
+
+                    
+            }
+
             if (result.RequiresTwoFactor)
             {
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });

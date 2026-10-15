@@ -10,6 +10,10 @@ namespace RaceDay.Controllers
         {
             return View();
         }
+        public IActionResult OrganizerDashboard()
+        {
+            return View();
+        }
         public IActionResult Index()
         {
             return View();
