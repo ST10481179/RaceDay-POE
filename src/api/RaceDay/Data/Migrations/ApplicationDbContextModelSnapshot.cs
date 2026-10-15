@@ -217,7 +217,6 @@ namespace RaceDay.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ProfileImagePath")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 

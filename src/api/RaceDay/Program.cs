@@ -69,11 +69,12 @@ using (var scope = app.Services.CreateScope())
 
     if(await userManager.FindByEmailAsync(email) == null)
     {
-        var user = new ApplicationUser();
-
-        user.UserName = email;
-        user.Email = email;
-        user.EmailConfirmed = true; // Set to true if you want to bypass email confirmation
+        var user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true // Set to true if you want to bypass email confirmation
+        };
 
         await userManager.CreateAsync(user,password);
         await userManager.AddToRoleAsync(user, "Admin");
