@@ -22,10 +22,12 @@
                             <input  asp-for="@Model[i].isSelected" class="form-check-input"/>
                             <label class="form-check-label">@Model[i].RoleName</label>
                 </div>
-        }
-    </div>
-<div class="card-footer">
-    <input type="submit" value="Update Roles" class="btn btn-primary" />
-<a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            }
+        </div>
+        <div class="card-footer">
+            <input type="submit" value="Update Roles" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div> <!-- close card-footer -->
+    </div> <!-- close card -->
 </form>
-</div>
+</div> <!-- close container -->

@@ -52,7 +52,7 @@
               "RelativeDocumentMoniker": "Views\\UserRoles\\Manage.cshtml",
               "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Views\\UserRoles\\Manage.cshtml",
               "RelativeToolTip": "Views\\UserRoles\\Manage.cshtml",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-10-15T18:28:35.131Z",
               "EditorCaption": ""
@@ -67,8 +67,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAB8AAAAAAAAAAAAowDgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-15T18:31:55.232Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-15T18:31:55.232Z"
             },
             {
               "$type": "Document",
@@ -80,8 +79,7 @@
               "RelativeToolTip": "Controllers\\UserRoles.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAewAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-15T18:28:31.057Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-15T18:28:31.057Z"
             },
             {
               "$type": "Document",
@@ -93,8 +91,7 @@
               "RelativeToolTip": "Views\\UserRoles\\Index.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-10-15T18:20:02.077Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-15T18:20:02.077Z"
             },
             {
               "$type": "Document",
@@ -106,8 +103,7 @@
               "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Login.cshtml.cs",
               "ViewState": "AgIAAHgAAAAAAAAAAAAAAH8AAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-15T12:30:51.568Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-15T12:30:51.568Z"
             },
             {
               "$type": "Document",
