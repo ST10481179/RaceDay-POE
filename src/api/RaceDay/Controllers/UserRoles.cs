@@ -2,17 +2,20 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Models.ViewModels;
+using RaceDay.Data;
 using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RaceDay.Controllers
 {
     [Authorize(Roles = "Admin")]
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Keep explicit constructor for compatibility")]
     public class UserRoles : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         public UserRoles(
-            UserManager<IdentityUser> userManager,
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
