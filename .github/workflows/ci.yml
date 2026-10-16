@@ -1,4 +1,4 @@
-Build and Test
+name: .NET CI
 
 on:
   push:
@@ -11,19 +11,19 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Setup .NET 10
-      uses: actions/setup-dotnet@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore src/api/RaceDay/RaceDay.csproj
+      run: dotnet restore src/api/RaceDay.csproj
 
     - name: Build
-      run: dotnet build src/api/RaceDay/RaceDay.csproj --no-restore --configuration Release
+      run: dotnet build src/api/RaceDay.csproj --configuration Release --no-restore
 
     - name: Run tests
       run: dotnet test --no-build --verbosity normal
