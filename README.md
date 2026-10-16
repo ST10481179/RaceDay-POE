@@ -98,6 +98,16 @@ The video demonstrates:
 1. Clone the repo:
    ```bash
    git clone https://github.com/ST10481179/RaceDay-POE.git
+2. Navigate to the API project:
+   cd src/api/RaceDay
+3. Apply migrations:
+  dotnet ef database update
+4. Run the API:
+  dotnet run
+5. Open Swagger UI:
+   https://localhost:5001/swagger
+
+   
 
 ## Submission Notes
 - All planning documents are inside `/docs`
