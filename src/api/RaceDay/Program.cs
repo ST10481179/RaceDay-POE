@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Data.SqlClient;
 using RaceDay.Data;
 using RaceDay.Models.Interface;
 
@@ -22,68 +24,100 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate(); // Apply any pending migrations to the
+    var logger = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<Program>>();
 
-    var rolmanager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roles = new[] { "Admin", "Organizer", "Participant" };
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    
-    
-    foreach (var role in roles)
+    try
     {
-        if (!await rolmanager.RoleExistsAsync(role))
-        {
-            await rolmanager.CreateAsync(new IdentityRole(role));
-        }
+        db.Database.Migrate(); // Apply any pending migrations to the database
+    }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("PendingModelChangesWarning") || ex.Message.Contains("pending changes"))
+    {
+        // Log a helpful error and continue startup so the app doesn't crash immediately.
+        logger.LogError(ex, "Database migration skipped: pending model changes detected. Create a new EF Core migration (dotnet ef migrations add <Name>) and apply it before automatic migration. See https://aka.ms/efcore-docs-pending-changes.");
     }
 
-    // If an older "User" role exists, migrate its members to "Organizer" and remove the old role.
-    if (await rolmanager.RoleExistsAsync("User"))
+    // Check whether the AspNetRoles table exists before attempting to use RoleManager
+    var rolesTableExists = false;
+    try
     {
-        // ensure Organizer exists
-        if (!await rolmanager.RoleExistsAsync("Organizer"))
+        using (var conn = new SqlConnection(connectionString))
         {
-            await rolmanager.CreateAsync(new IdentityRole("Organizer"));
+            await conn.OpenAsync();
+            using var cmd = new SqlCommand("SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'AspNetRoles'", conn);
+            var result = await cmd.ExecuteScalarAsync();
+            rolesTableExists = Convert.ToInt32(result) > 0;
         }
+    }
+    catch (Exception ex)
+    {
+        // If the check fails, log and continue; we'll avoid calling RoleManager to prevent crashing.
+        logger.LogWarning(ex, "Failed to check for AspNetRoles table existence. Role seeding will be skipped to avoid startup failure.");
+    }
 
-        var usersInOldRole = await userManager.GetUsersInRoleAsync("User");
-        foreach (var u in usersInOldRole)
+    if (!rolesTableExists)
+    {
+        logger.LogError("Database does not contain the AspNetRoles table. Role and user seeding skipped. Ensure Identity tables are included in your migrations and applied (dotnet ef migrations add InitialIdentity && dotnet ef database update), or create the missing tables.");
+    }
+    else
+    {
+        var rolmanager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var roles = new[] { "Admin", "Organiser", "Participant" };
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+
+        foreach (var role in roles)
         {
-            // add to Organizer and remove from User
-            if (!await userManager.IsInRoleAsync(u, "Organizer"))
+            if (!await rolmanager.RoleExistsAsync(role))
             {
-                await userManager.AddToRoleAsync(u, "Organizer");
+                await rolmanager.CreateAsync(new IdentityRole(role));
             }
-            await userManager.RemoveFromRoleAsync(u, "User");
         }
 
-        var oldRole = await rolmanager.FindByNameAsync("User");
-        if (oldRole != null)
+        // If an older "User" role exists, migrate its members to "Organiser" and remove the old role.
+        if (await rolmanager.RoleExistsAsync("User"))
         {
-            await rolmanager.DeleteAsync(oldRole);
+            // ensure Organiser exists
+            if (!await rolmanager.RoleExistsAsync("Organiser"))
+            {
+                await rolmanager.CreateAsync(new IdentityRole("Organiser"));
+            }
+
+            var usersInOldRole = await userManager.GetUsersInRoleAsync("User");
+            foreach (var u in usersInOldRole)
+            {
+                // add to Organiser and remove from User
+                if (!await userManager.IsInRoleAsync(u, "Organiser"))
+                {
+                    await userManager.AddToRoleAsync(u, "Organiser");
+                }
+                await userManager.RemoveFromRoleAsync(u, "User");
+            }
+
+            var oldRole = await rolmanager.FindByNameAsync("User");
+            if (oldRole != null)
+            {
+                await rolmanager.DeleteAsync(oldRole);
+            }
+        }
+
+        string email = "admin@example.com";
+        string password = "Admin@123"; // Ensure this meets your password
+
+        if (await userManager.FindByEmailAsync(email) == null)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true, // Set to true if you want to bypass email confirmation
+                ProfileImagePath = string.Empty // Ensure non-null value for DB insert
+            };
+
+            await userManager.CreateAsync(user, password);
+            await userManager.AddToRoleAsync(user, "Admin");
         }
     }
-    var useerManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    string email = "admin@example.com";
-    string password = "Admin@123"; // Ensure this meets your password
-
-    if(await userManager.FindByEmailAsync(email) == null)
-    {
-        var user = new ApplicationUser
-        {
-            UserName = email,
-            Email = email,
-            EmailConfirmed = true // Set to true if you want to bypass email confirmation
-        };
-
-        await userManager.CreateAsync(user,password);
-        await userManager.AddToRoleAsync(user, "Admin");
-    }
-
-  }
-
-
-
+} // end using scope
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

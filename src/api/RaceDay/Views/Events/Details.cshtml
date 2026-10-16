@@ -1,0 +1,38 @@
+@model RaceDay.Models.Event
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<h1>@Model.Name</h1>
+<p>@Model.Description</p>
+<p><strong>Date:</strong> @Model.Date.ToString("yyyy-MM-dd")</p>
+<p><strong>Location:</strong> @Model.Location</p>
+<p><strong>Distance:</strong> @Model.DistanceKm km</p>
+<p><strong>Type:</strong> @Model.Type</p>
+
+<h3>Categories</h3>
+@if (Model.Categories != null && Model.Categories.Any())
+{
+    <ul>
+        @foreach (var c in Model.Categories)
+        {
+            <li>@c.Name</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No categories defined.</p>
+}
+
+@if (User.IsInRole("Participant"))
+{
+    <a class="btn btn-primary" asp-controller="Enrolments" asp-action="Create" asp-route-eventId="@Model.Id">Enrol</a>
+}
+@if (User.IsInRole("Organiser") || User.IsInRole("Admin"))
+{
+    <a class="btn btn-secondary" asp-controller="Categories" asp-action="Index" asp-route-eventId="@Model.Id">Manage Categories</a>
+    <a class="btn btn-secondary" asp-controller="Enrolments" asp-action="Index" asp-route-eventId="@Model.Id">View Enrolments</a>
+    <a class="btn btn-secondary" asp-controller="Results" asp-action="Manage" asp-route-eventId="@Model.Id">Manage Results</a>
+}

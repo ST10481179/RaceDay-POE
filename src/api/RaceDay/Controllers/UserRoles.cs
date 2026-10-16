@@ -98,6 +98,10 @@ namespace RaceDay.Controllers
                 ModelState.AddModelError("", "Cannot add selected roles to user");
                 return View(model);
             }
+            // Update the security stamp so any existing sign-in cookies are invalidated
+            // This forces the user to re-authenticate and pick up their new roles
+            await _userManager.UpdateSecurityStampAsync(user);
+
             return RedirectToAction("Index");
         }
     }

@@ -9,13 +9,13 @@ namespace RaceDay.Models.Interface
 {
     public interface IProfileImageService
     {
-        Task<string> SaveAsync(IFormFile file);
+        Task<string?> SaveAsync(IFormFile file);
 
         void Delete(string? relativePath);
     }
     public class ProfileImageService : IProfileImageService
     {
-        private static readonly string[] Allowed = { ".jpg", ".jpeg", ".png", ".gif" };
+        private static readonly string[] Allowed = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
 
         private const long Maxbytes = 2 * 1024 * 1024; // 2 MB
 
@@ -23,12 +23,12 @@ namespace RaceDay.Models.Interface
 
         public ProfileImageService(IWebHostEnvironment env) => _env = env;
 
-        public async Task<string> SaveAsync(IFormFile file)
+        public async Task<string?> SaveAsync(IFormFile file)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
 
             if (!Allowed.Contains(ext) || file.Length == 0 || file.Length > Maxbytes)
-                throw new ArgumentException("Invalid file", nameof(file));
+                return null;
 
             var folder = Path.Combine(_env.WebRootPath,"uploads","profiles");
             Directory.CreateDirectory(folder);

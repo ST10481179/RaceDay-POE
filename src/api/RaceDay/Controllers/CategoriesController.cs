@@ -1,0 +1,109 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RaceDay.Data;
+using RaceDay.Models;
+
+namespace RaceDay.Controllers
+{
+    [Authorize]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Keep explicit constructor for clarity and compatibility")]
+    public class CategoriesController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public CategoriesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+
+        // GET: Categories for Event
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(int eventId)
+        {
+            if (_context.Categories == null) return View(new System.Collections.Generic.List<Category>());
+            var categories = await _context.Categories.Where(c => c.EventId == eventId).ToListAsync();
+            ViewBag.EventId = eventId;
+            return View(categories);
+        }
+
+        [Authorize(Roles = "Organiser,Admin")]
+        public IActionResult Create(int eventId)
+        {
+            ViewBag.EventId = eventId;
+            return View(new Category { EventId = eventId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Create([Bind("EventId,Name,MinAge,MaxAge,MinDistanceKm,MaxDistanceKm")] Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(category);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", new { eventId = category.EventId });
+            }
+            return View(category);
+        }
+
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (_context.Categories == null) return NotFound();
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EventId,Name,MinAge,MaxAge,MinDistanceKm,MaxDistanceKm")] Category category)
+        {
+            if (id != category.Id) return NotFound();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(category);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (_context.Categories == null || !_context.Categories.Any(e => e.Id == category.Id)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction("Index", new { eventId = category.EventId });
+            }
+            return View(category);
+        }
+
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (_context.Categories == null) return NotFound();
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var category = await _context.Categories!.FindAsync(id);
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index", new { eventId = category?.EventId });
+        }
+    }
+}

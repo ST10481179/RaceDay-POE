@@ -116,21 +116,30 @@ public class LoginModel : PageModel
             
             if (result.Succeeded)
             {
-                if (User.IsInRole("Admin"))
+                // Determine destination based on roles using a central helper
+                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                if (user != null)
                 {
-                    _logger.LogInformation("User Admin logged in.");
-                    return RedirectToAction("AdminDashboard","Home");
+                    var dest = await RaceDay.Utils.RoleHelper.DetermineDestinationAsync(_signInManager.UserManager, user);
+                    switch (dest)
+                    {
+                        case RaceDay.Utils.RoleHelper.Destination.Admin:
+                            _logger.LogInformation("User Admin logged in.");
+                            return RedirectToAction("AdminDashboard","Home");
+                        case RaceDay.Utils.RoleHelper.Destination.Participant:
+                            _logger.LogInformation("User Participant logged in.");
+                            return RedirectToPage("./Manage/Index");
+                        case RaceDay.Utils.RoleHelper.Destination.Organiser:
+                            _logger.LogInformation("User Organiser logged in.");
+                            return RedirectToAction("OrganiserDashboard", "Home");
+                        default:
+                            _logger.LogInformation("User logged in (no special role).");
+                            return LocalRedirect(returnUrl);
+                    }
                 }
-                else if (User.IsInRole("Participant"))
-                {
-                    _logger.LogInformation("User Participant logged in.");
-                    return RedirectToPage("./Manage/Index");
-                }
-                else if (User.IsInRole("Organiser"))
-                {
-                    _logger.LogInformation("User Organiser logged in.");
-                    return RedirectToAction("OrganiserDashboard", "Home");
-                }
+
+                _logger.LogInformation("User logged in (user not found after sign-in).");
+                return LocalRedirect(returnUrl);
             }
             if (result.RequiresTwoFactor)
             {

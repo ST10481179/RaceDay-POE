@@ -1,27 +1,30 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-namespace RaceDay.Data;
-// Add profile data for application users by adding properties to the IdentityUser class
-public enum Gender
+
+namespace RaceDay.Data
 {
-    Male,
-    Female,
-    Other,
-    PreferNotToSay
-}
+    // Add profile data for application users by adding properties to the IdentityUser class
+    public enum Gender
+    {
+        Male,
+        Female,
+        Other,
+        PreferNotToSay
+    }
 
-public class ApplicationUser : IdentityUser
-{
-    [Required, MaxLength(50)]
-    public string FirstName { get; set; } = string.Empty;
+    public class ApplicationUser : IdentityUser
+    {
+        [Required, MaxLength(50)]
+        public string FirstName { get; set; } = string.Empty;
 
-    [Required, MaxLength(50)]
-    public string LastName { get; set; } = string.Empty;
+        [Required, MaxLength(50)]
+        public string LastName { get; set; } = string.Empty;
 
-    public Gender Gender { get; set; }
+        public Gender Gender { get; set; }
 
-    [MaxLength(250)]
-    public string? ProfileImagePath { get; set; }
+        [MaxLength(250)]
+        public string ProfileImagePath { get; set; } = string.Empty;
 
-    public string FullName => $"{FirstName} {LastName}";
+        public string FullName => $"{FirstName} {LastName}";
+    }
 }

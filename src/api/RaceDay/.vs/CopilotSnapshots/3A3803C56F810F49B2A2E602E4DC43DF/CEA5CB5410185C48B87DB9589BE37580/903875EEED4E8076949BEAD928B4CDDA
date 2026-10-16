@@ -1,0 +1,46 @@
+﻿@model IEnumerable<RaceDay.Models.Category>
+
+@{
+    ViewData["Title"] = "Categories";
+    var eventId = ViewBag.EventId as int? ?? 0;
+}
+
+<h1>Categories</h1>
+
+<p>
+    @if (User.IsInRole("Organiser") || User.IsInRole("Admin"))
+    {
+        <a class="btn btn-primary" asp-action="Create" asp-route-eventId="@eventId">Create Category</a>
+    }
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Min Age</th>
+            <th>Max Age</th>
+            <th>Min Distance</th>
+            <th>Max Distance</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.MinAge</td>
+            <td>@item.MaxAge</td>
+            <td>@item.MinDistanceKm</td>
+            <td>@item.MaxDistanceKm</td>
+            <td>
+                @if (User.IsInRole("Organiser") || User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

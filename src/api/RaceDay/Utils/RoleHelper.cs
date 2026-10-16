@@ -1,0 +1,30 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using RaceDay.Data;
+
+namespace RaceDay.Utils
+{
+    public static class RoleHelper
+    {
+        public enum Destination
+        {
+            None,
+            Admin,
+            Participant,
+            Organiser
+        }
+
+        public static async Task<Destination> DetermineDestinationAsync(UserManager<ApplicationUser> userManager, ApplicationUser user)
+        {
+            if (user == null) return Destination.None;
+
+            if (await userManager.IsInRoleAsync(user, "Admin")) return Destination.Admin;
+            if (await userManager.IsInRoleAsync(user, "Participant")) return Destination.Participant;
+            // Support both spellings for organiser role
+            if (await userManager.IsInRoleAsync(user, "Organiser") || await userManager.IsInRoleAsync(user, "Organiser"))
+                return Destination.Organiser;
+
+            return Destination.None;
+        }
+    }
+}

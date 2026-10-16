@@ -7,6 +7,25 @@
     <UserSecretsId>aspnet-RaceDay-d44e9d48-ff4d-45f6-8968-9fb43223e30b</UserSecretsId>
   </PropertyGroup>
 
+  <!-- Exclude test project files from the web project to avoid them being compiled into the main app -->
+  <ItemGroup>
+    <Compile Remove="tests\**\*.cs" />
+    <None Remove="tests\**\*" />
+    <Content Remove="tests\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\20261016043500_InitialCreate.cs" />
+    <Compile Remove="Migrations\20261016043500_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20261016045018_Update.cs" />
+    <Compile Remove="Migrations\20261016045018_Update.Designer.cs" />
+    <Compile Remove="Migrations\20261016050229_Secondarykey.cs" />
+    <Compile Remove="Migrations\20261016050229_Secondarykey.Designer.cs" />
+    <Compile Remove="Migrations\20261016050945_AddEventModels.cs" />
+    <Compile Remove="Migrations\20261016050945_AddEventModels.Designer.cs" />
+    <Compile Remove="Migrations\20261018_RemoveEventForeignKeys.cs" />
+    <Compile Remove="Migrations\InitialCreateBase.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.13" />

@@ -1,0 +1,165 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using RaceDay.Data;
+using RaceDay.Models;
+
+namespace RaceDay.Controllers
+{
+    [Authorize]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Keep explicit constructor for clarity and compatibility")]
+    public class EventsController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> _userManager;
+
+        public EventsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+
+        // GET: Events
+        [AllowAnonymous]
+        public async Task<IActionResult> Index()
+        {
+            if (_context.Events == null) return View(new System.Collections.Generic.List<Event>());
+            var events = await _context.Events.Include(e => e.Categories).ToListAsync();
+            return View(events);
+        }
+
+        // GET: Events/Details/5
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.Events == null) return NotFound();
+            var @event = await _context.Events!.Include(e => e.Categories).FirstOrDefaultAsync(m => m.Id == id);
+            if (@event == null) return NotFound();
+            return View(@event);
+        }
+
+        // GET: Events/Create
+        [Authorize(Roles = "Organiser,Admin")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Events/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Create([Bind("Name,Description,Date,Location,DistanceKm,Type")] Event @event)
+        {
+            // Ensure OrganiserId is set server-side and not left empty
+            var organiserId = _userManager.GetUserId(User) ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(organiserId))
+            {
+                ModelState.AddModelError(string.Empty, "Unable to determine organiser. Please ensure you are signed in.");
+            }
+            else
+            {
+                @event.OrganiserId = organiserId;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // Log ModelState errors to help diagnosis (use built-in logging if available)
+                foreach (var key in ModelState.Keys)
+                {
+                    var state = ModelState[key];
+                    foreach (var error in state.Errors)
+                    {
+                        // Using Console.WriteLine for simplicity; production should use ILogger
+                        System.Console.WriteLine($"ModelState error for '{key}': {error.ErrorMessage}");
+                    }
+                }
+
+                return View(@event);
+            }
+
+            try
+            {
+                _context.Add(@event);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log and surface a friendly error
+                System.Console.WriteLine($"Database update error creating Event: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "An error occurred while saving the event. Please try again.");
+                return View(@event);
+            }
+        }
+
+        // GET: Events/Edit/5
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || _context.Events == null) return NotFound();
+            var @event = await _context.Events.FindAsync(id);
+            if (@event == null) return NotFound();
+            if (@event.OrganiserId != _userManager.GetUserId(User) && !User.IsInRole("Admin")) return Forbid();
+            return View(@event);
+        }
+
+        // POST: Events/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Date,Location,DistanceKm,Type")] Event @event)
+        {
+            if (id != @event.Id) return NotFound();
+            if (_context.Events == null) return Problem("Entity set 'ApplicationDbContext.Events' is null.");
+            var existing = await _context.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
+            if (existing == null) return NotFound();
+            if (existing.OrganiserId != _userManager.GetUserId(User) && !User.IsInRole("Admin")) return Forbid();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    @event.OrganiserId = existing.OrganiserId;
+                    _context.Update(@event);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (_context.Events == null || !_context.Events.Any(e => e.Id == @event.Id)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(@event);
+        }
+
+        // GET: Events/Delete/5
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null || _context.Events == null) return NotFound();
+            var @event = await _context.Events.FirstOrDefaultAsync(m => m.Id == id);
+            if (@event == null) return NotFound();
+            if (@event.OrganiserId != _userManager.GetUserId(User) && !User.IsInRole("Admin")) return Forbid();
+            return View(@event);
+        }
+
+        // POST: Events/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organiser,Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (_context.Events == null) return Problem("Entity set 'ApplicationDbContext.Events' is null.");
+            var @event = await _context.Events.FindAsync(id);
+            if (@event != null)
+            {
+                _context.Events.Remove(@event);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<RaceDay.Models.Enrolment>
+
+@{
+    ViewData["Title"] = "Manage Results";
+    var @event = ViewBag.Event as RaceDay.Models.Event;
+}
+
+<h1>Manage Results for @event?.Name</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Participant</th>
+            <th>Finish Time</th>
+            <th>Position</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var enrol in Model)
+    {
+        <tr>
+            <td>@enrol.Participant?.FullName ?? enrol.Participant?.UserName</td>
+            <td>
+                <form asp-action="UpdateResult" method="post" class="d-flex gap-2">
+                    <input type="hidden" name="eventId" value="@enrol.EventId" />
+                    <input type="hidden" name="participantId" value="@enrol.ParticipantId" />
+                    <input type="time" step="1" name="finish" class="form-control" />
+                    <input type="number" name="position" class="form-control" style="width:100px;" />
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+    }
+    </tbody>
+</table>
