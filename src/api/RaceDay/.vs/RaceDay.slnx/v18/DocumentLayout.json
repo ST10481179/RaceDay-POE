@@ -3,12 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|c:\\users\\tanki\\onedrive\\documents\\github\\raceday-poe\\src\\api\\raceday\\controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|solutionrelative:controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|c:\\users\\tanki\\onedrive\\documents\\github\\raceday-poe\\src\\api\\raceday\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|c:\\users\\tanki\\onedrive\\documents\\github\\raceday-poe\\src\\api\\raceday\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|c:\\users\\tanki\\onedrive\\documents\\github\\raceday-poe\\src\\api\\raceday\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|c:\\users\\tanki\\onedrive\\documents\\github\\raceday-poe\\src\\api\\raceday\\.editorconfig||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|solutionrelative:.editorconfig||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|c:\\users\\tanki\\onedrive\\documents\\github\\raceday-poe\\src\\api\\raceday\\controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|solutionrelative:controllers\\eventscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{02FA837B-4C50-4CBE-BE58-B1BDEE02B0A1}|RaceDay.csproj|c:\\users\\tanki\\onedrive\\documents\\github\\raceday-poe\\src\\api\\raceday\\views\\events\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -22,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,20 +50,70 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "EventsController.cs",
-              "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Controllers\\EventsController.cs",
-              "RelativeDocumentMoniker": "Controllers\\EventsController.cs",
-              "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Controllers\\EventsController.cs",
-              "RelativeToolTip": "Controllers\\EventsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T05:55:40.346Z",
+              "DocumentIndex": 1,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Properties\\launchSettings.json",
+              "RelativeToolTip": "Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-10-16T09:17:34.173Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-10-16T07:47:59.258Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": ".editorconfig",
+              "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\.editorconfig",
+              "RelativeDocumentMoniker": ".editorconfig",
+              "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\.editorconfig",
+              "RelativeToolTip": ".editorconfig",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-10-16T07:47:46.635Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-16T05:33:38.129Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "EventsController.cs",
+              "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Controllers\\EventsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\EventsController.cs",
+              "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Controllers\\EventsController.cs",
+              "RelativeToolTip": "Controllers\\EventsController.cs",
+              "ViewState": "AgIAAH8AAAAAAAAAAAAqwBsAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-16T05:55:40.346Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Views\\Events\\Create.cshtml",
               "RelativeDocumentMoniker": "Views\\Events\\Create.cshtml",
@@ -59,21 +121,7 @@
               "RelativeToolTip": "Views\\Events\\Create.cshtml",
               "ViewState": "AgIAADkAAAAAAAAAAABBwDoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-10-16T05:48:28.062Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\tanki\\OneDrive\\Documents\\GitHub\\RaceDay-POE\\src\\api\\RaceDay\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T05:33:38.129Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-16T05:48:28.062Z"
             }
           ]
         }
