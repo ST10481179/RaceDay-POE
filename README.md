@@ -57,6 +57,47 @@ The video demonstrates:
 - SQL script execution in SSMS
 
 ---
+## Part 2 – Web API Implementation
+
+### Project Setup
+- ASP.NET Core WebAPI project located at `src/api/RaceDay/RaceDay.csproj`.
+- Entity Framework Core with migrations configured.
+- Connection string defined in `appsettings.json`.
+
+### Authentication & Roles
+- Identity configured with hashed passwords.
+- Roles: **Organiser** and **Participant**.
+- JWT authentication implemented with role claims.
+
+### Functional Endpoints
+- **AuthenticationController** → Register, Login.
+- **UserController** → Manage user profiles.
+- **EventController** → Organisers create/update/delete events; all users view.
+- **CategoryController** → Organisers define categories; all users view.
+- **EnrolmentController** → Participants enrol; Organisers view enrolments.
+- **ResultController** → Organisers capture results; Participants view results.
+
+### Swagger Integration
+- Swagger enabled in `Program.cs`.
+- Accessible at `/swagger` when running the API.
+- Endpoints documented with summaries and response types.
+
+### Unit Testing
+- xUnit tests included.
+- Covers both success and failure scenarios (e.g., unauthenticated requests, wrong role, duplicate enrolments).
+
+### CI/CD
+- GitHub Actions workflow (`.github/workflows/ci.yml`) builds and tests on push to `main`.
+- Status badge included below:
+
+![.NET CI](https://github.com/ST10481179/RaceDay-POE/actions/workflows/ci.yml/badge.svg)
+
+---
+
+## How to Run
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/ST10481179/RaceDay-POE.git
 
 ## Submission Notes
 - All planning documents are inside `/docs`
