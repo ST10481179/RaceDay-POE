@@ -58,7 +58,9 @@ The video demonstrates:
 
 ---
 ## Part 2 – Web API Implementation
-
+## Video Presentation Part 2
+Unlisted YouTube link:
+https://youtu.be/MBRmk7sk56k
 ### Project Setup
 - ASP.NET Core WebAPI project located at `src/api/RaceDay/RaceDay.csproj`.
 - Entity Framework Core with migrations configured.
