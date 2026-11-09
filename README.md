@@ -120,7 +120,7 @@ https://youtu.be/MBRmk7sk56k
 - **Enrolment management:** Organisers can view participants and categories enrolled in their events.
 - **Results:** Organisers can record or update participant finish times and positions; participants can view their own results.
 - **User profiles:** Users can view and update their profile information.
-- **Docker command:** docker run -d -p 8080:8080 --name RaceDay-app my-mvc-app
+- **Docker command:** docker run -d -p 8080:8080 --name RaceDay-app my-RaceDay-app
 - src/mvc/docker
 - **Docker screenshot**
 - ![Docker screenshot](docs/Screenshot%202026-11-10%20012130.png)
