@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using RaceDay.Models;
+using DemoProject.Models;
 using System.Diagnostics;
 
-namespace RaceDay.Controllers
+namespace DemoProject.Controllers
 {
     public class HomeController : Controller
     {
@@ -10,6 +10,7 @@ namespace RaceDay.Controllers
         {
             return View();
         }
+
         public IActionResult OrganiserDashboard()
         {
             return View();

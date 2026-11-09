@@ -301,3 +301,7 @@ C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\n
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\net10.0\RaceDay.genruntimeconfig.cache
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\net10.0\ref\RaceDay.dll
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\bin\Debug\net10.0\Apache.Arrow.dll
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\bin\Debug\net10.0\Azure.Storage.Blobs.dll
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\bin\Debug\net10.0\Azure.Storage.Common.dll
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\bin\Debug\net10.0\System.IO.Hashing.dll
