@@ -6,10 +6,12 @@
 
 <h1>My Results</h1>
 
-<table class="table">
+<table class="table table-striped align-middle">
     <thead>
         <tr>
             <th>Event</th>
+            <th>Date</th>
+            <th>Category</th>
             <th>Finish Time</th>
             <th>Position</th>
         </tr>
@@ -19,8 +21,10 @@
     {
         <tr>
             <td>@item.Event?.Name</td>
-            <td>@(item.FinishTime?.ToString())</td>
-            <td>@item.Position</td>
+            <td>@(item.Event?.Date.ToString("dd MMM yyyy") ?? "-")</td>
+            <td>—</td>
+            <td>@(item.FinishTime?.ToString("hh\\:mm\\:ss") ?? "Pending")</td>
+            <td>@(item.Position.HasValue ? item.Position.Value.ToString() : "Pending")</td>
         </tr>
     }
     </tbody>

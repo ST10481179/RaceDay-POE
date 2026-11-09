@@ -98,7 +98,7 @@ namespace RaceDay.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 // 1. Save the image (if one was uploaded)
-                string imagePath = null;
+                string imagePath = string.Empty;
                 if (Input.ProfileImage is { Length: > 0 })
                 {
                     imagePath = await _images.SaveAsync(Input.ProfileImage);
@@ -124,17 +124,14 @@ namespace RaceDay.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    //Assign the seeded role to the new user
                     var roleResult = await _userManager.AddToRoleAsync(user, "Participant");
                     if (!roleResult.Succeeded)
                     {
                         foreach (var error in roleResult.Errors)
                         {
                             _logger.LogError("Failed to assign role: {Error}", error.Description);
-
                         }
 
-                        //Roll back to the user is not left without role
                         await _userManager.DeleteAsync(user);
                         ModelState.AddModelError(string.Empty, "Unable to complete registration. Please try again");
                         return Page();

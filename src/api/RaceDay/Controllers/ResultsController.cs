@@ -1,13 +1,13 @@
-using DemoProject.Data;
-using DemoProject.Models;
-using DemoProject.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RaceDay.Data;
+using RaceDay.Models;
+using RaceDay.Models.ViewModels;
 
 
-namespace DemoProject.Controllers;
+namespace RaceDay.Controllers;
 
 [Authorize]
 public class ResultsController : Controller
@@ -27,14 +27,7 @@ public class ResultsController : Controller
     {
         var ev = await FindOwnedEventAsync(eventId);
         if (ev == null) return NotFound();
-
-        if (ev.Date > DateTime.Now)   // remove this check if you want to capture results early while testing
-        {
-            TempData["Error"] = "Results can only be captured after the event has taken place.";
-            return RedirectToAction("Details", "Events", new { id = eventId });
-        }
-
-        return View(await BuildViewModelAsync(ev));
+        return View("Capture", await BuildViewModelAsync(ev));
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -44,79 +37,20 @@ public class ResultsController : Controller
         var ev = await FindOwnedEventAsync(model.EventId);
         if (ev == null) return NotFound();
 
-        if (ev.Date > DateTime.Now)
-        {
-            TempData["Error"] = "Results can only be captured after the event has taken place.";
-            return RedirectToAction("Details", "Events", new { id = ev.Id });
-        }
-
-        // Only accept enrolments that really belong to this event
-        var enrolments = await _db.Enrolments
-            .Include(e => e.Result)
-            .Where(e => e.EventId == ev.Id)
-            .ToDictionaryAsync(e => e.Id);
-
-        // Validate each row
-        for (var i = 0; i < model.Rows.Count; i++)
-        {
-            var row = model.Rows[i];
-            if (!enrolments.ContainsKey(row.EnrolmentId))
-            {
-                ModelState.AddModelError("", "Invalid enrolment submitted.");
-                continue;
-            }
-            if (row.FinishTime.HasValue != row.Position.HasValue)
-                ModelState.AddModelError($"Rows[{i}].Position", "Enter both a finish time and a position (or leave both blank).");
-            if (row.FinishTime.HasValue && row.FinishTime.Value <= TimeSpan.Zero)
-                ModelState.AddModelError($"Rows[{i}].FinishTime", "Finish time must be greater than zero.");
-        }
-
-        // Positions must be unique within the event
-        var duplicates = model.Rows.Where(r => r.Position.HasValue)
-            .GroupBy(r => r.Position!.Value).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
-        if (duplicates.Any())
-            ModelState.AddModelError("", $"Duplicate finishing positions: {string.Join(", ", duplicates)}.");
-
-        if (!ModelState.IsValid)
-        {
-            model.EventName = ev.Name;
-            // Restore display-only fields that aren't posted back
-            foreach (var row in model.Rows.Where(r => enrolments.ContainsKey(r.EnrolmentId)))
-            {
-                var en = await _db.Enrolments.Include(e => e.Participant).Include(e => e.Category)
-                    .AsNoTracking().FirstAsync(e => e.Id == row.EnrolmentId);
-                row.ParticipantName = $"{en.Participant!.FirstName} {en.Participant.LastName}";
-                row.CategoryName = en.Category!.Name;
-            }
-            return View(model);
-        }
-
-        // Upsert / remove results
         foreach (var row in model.Rows)
         {
-            var enrolment = enrolments[row.EnrolmentId];
-
-            if (row.FinishTime.HasValue && row.Position.HasValue)
+            var result = await _db.Results.FirstOrDefaultAsync(r =>
+                r.EventId == ev.Id && r.ParticipantId == row.ParticipantId);
+            if (row.FinishTime.HasValue || row.Position.HasValue)
             {
-                if (enrolment.Result == null)
-                {
-                    _db.Results.Add(new Result
-                    {
-                        EnrolmentId = enrolment.Id,
-                        FinishTime = row.FinishTime.Value,
-                        Position = row.Position.Value
-                    });
-                }
-                else
-                {
-                    enrolment.Result.FinishTime = row.FinishTime.Value;
-                    enrolment.Result.Position = row.Position.Value;
-                    enrolment.Result.CapturedOn = DateTime.UtcNow;
-                }
+                result ??= new Result { EventId = ev.Id, ParticipantId = row.ParticipantId };
+                result.FinishTime = row.FinishTime;
+                result.Position = row.Position;
+                if (result.Id == 0) _db.Results.Add(result);
             }
-            else if (enrolment.Result != null)
+            else if (result != null)
             {
-                _db.Results.Remove(enrolment.Result);   // cleared by the organiser
+                _db.Results.Remove(result);
             }
         }
 
@@ -131,38 +65,44 @@ public class ResultsController : Controller
     {
         var userId = _users.GetUserId(User);
         var results = await _db.Results
-            .Include(r => r.Enrolment!).ThenInclude(e => e.Event)
-            .Include(r => r.Enrolment!).ThenInclude(e => e.Category)
+            .Include(r => r.Event)
             .AsNoTracking()
-            .Where(r => r.Enrolment!.ParticipantId == userId)
-            .OrderByDescending(r => r.Enrolment!.Event!.Date)
+            .Where(r => r.ParticipantId == userId)
+            .OrderByDescending(r => r.Event!.Date)
             .ToListAsync();
-        return View(results);
+        return View("MyResults", results);
     }
 
     private Task<Event?> FindOwnedEventAsync(int eventId)
     {
         var userId = _users.GetUserId(User);
-        return _db.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == userId);
+        return _db.Events.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == userId);
     }
 
     private async Task<CaptureResultsViewModel> BuildViewModelAsync(Event ev)
     {
         var rows = await _db.Enrolments
-            .Include(e => e.Participant).Include(e => e.Category).Include(e => e.Result)
-            .AsNoTracking()
+            .Include(e => e.Participant)
+            .Include(e => e.Category)
             .Where(e => e.EventId == ev.Id)
-            .OrderBy(e => e.Result == null).ThenBy(e => e.Result!.Position)
-            .ThenBy(e => e.Participant!.LastName)
             .Select(e => new ResultRow
             {
-                EnrolmentId = e.Id,
+                ParticipantId = e.ParticipantId,
                 ParticipantName = e.Participant!.FirstName + " " + e.Participant.LastName,
-                CategoryName = e.Category!.Name,
-                FinishTime = e.Result != null ? e.Result.FinishTime : null,
-                Position = e.Result != null ? e.Result.Position : null
+                CategoryName = e.Category!.Name
             })
             .ToListAsync();
+
+        var resultByParticipant = await _db.Results
+            .Where(r => r.EventId == ev.Id)
+            .ToDictionaryAsync(r => r.ParticipantId);
+        foreach (var row in rows.Where(r => resultByParticipant.ContainsKey(r.ParticipantId)))
+        {
+            var result = resultByParticipant[row.ParticipantId];
+            row.FinishTime = result.FinishTime;
+            row.Position = result.Position;
+        }
 
         return new CaptureResultsViewModel { EventId = ev.Id, EventName = ev.Name, Rows = rows };
     }

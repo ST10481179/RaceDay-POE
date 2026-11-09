@@ -1,11 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
-using DemoProject.Models;
+using Microsoft.EntityFrameworkCore;
+using RaceDay.Data;
+using RaceDay.Models;
 using System.Diagnostics;
 
-namespace DemoProject.Controllers
+namespace RaceDay.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _db;
+
+        public HomeController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
         public IActionResult AdminDashboard()
         {
             return View();
@@ -15,9 +24,17 @@ namespace DemoProject.Controllers
         {
             return View();
         }
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var events = await _db.Events
+                .AsNoTracking()
+                .Include(e => e.Organiser)
+                .Where(e => e.Date >= DateTime.Now)
+                .OrderBy(e => e.Date)
+                .ToListAsync();
+
+            return View(events);
         }
 
         public IActionResult Privacy()

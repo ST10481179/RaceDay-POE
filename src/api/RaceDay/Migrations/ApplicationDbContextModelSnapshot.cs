@@ -319,6 +319,12 @@ namespace RaceDay.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BannerBlobName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BannerImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -328,6 +334,9 @@ namespace RaceDay.Data.Migrations
 
                     b.Property<double>("DistanceKm")
                         .HasColumnType("float");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -342,9 +351,6 @@ namespace RaceDay.Data.Migrations
                     b.Property<string>("OrganiserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
