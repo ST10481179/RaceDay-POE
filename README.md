@@ -120,6 +120,12 @@ https://youtu.be/MBRmk7sk56k
 - **Enrolment management:** Organisers can view participants and categories enrolled in their events.
 - **Results:** Organisers can record or update participant finish times and positions; participants can view their own results.
 - **User profiles:** Users can view and update their profile information.
+- ### CI/CD
+- GitHub Actions workflow (`.github/workflows/ci.yml`) builds and tests on push to `main`.
+- Status badge included below:
+
+![.NET CI](https://github.com/ST10481179/RaceDay-POE/actions/workflows/ci.yml/badge.svg)
+
 
 ### Part 3 Video Presentation
 Unlisted YouTube link:  
