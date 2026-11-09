@@ -600,8 +600,6 @@ C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\n
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\pew84bwdfd-{0}-9vr69e8ynj-9vr69e8ynj.gz
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\di07gt2qc6-{0}-87fc7y1x7t-87fc7y1x7t.gz
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\gvwyd8s0d3-{0}-mlv21k5csn-mlv21k5csn.gz
-C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\5d11zptxm9-{0}-sesbjg6a4q-sesbjg6a4q.gz
-C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\0mgo0oekpi-{0}-sesbjg6a4q-sesbjg6a4q.gz
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\staticwebassets.development.json
@@ -611,4 +609,6 @@ C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\n
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\RaceDay.csproj.Up2Date
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\RaceDay.genruntimeconfig.cache
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\ref\RaceDay.dll
-C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\04wfedol9n-{0}-wmsyzugkc3-wmsyzugkc3.gz
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\04wfedol9n-{0}-6q22r8re78-6q22r8re78.gz
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\5d11zptxm9-{0}-2xyphm9z7r-2xyphm9z7r.gz
+C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\mvc\RaceDay\obj\Debug\net10.0\compressed\0mgo0oekpi-{0}-2xyphm9z7r-2xyphm9z7r.gz

@@ -90,7 +90,7 @@ public class EnrolmentsController : Controller
             .Where(e => e.ParticipantId == userId)
             .OrderBy(e => e.Event!.Date)
             .ToListAsync();
-        return View(enrolments);
+        return View("MyEnrolments", enrolments);
     }
 
     // Participant: withdraw (only before the event and before a result exists)
@@ -133,7 +133,7 @@ public class EnrolmentsController : Controller
             .Where(e => e.EventId == eventId)
             .OrderBy(e => e.Category!.Name).ThenBy(e => e.Participant!.LastName)
             .ToListAsync();
-        return View(enrolments);
+        return View("Index", enrolments);
     }
 
     private async Task<string?> ValidateCanEnrolAsync(Event ev)

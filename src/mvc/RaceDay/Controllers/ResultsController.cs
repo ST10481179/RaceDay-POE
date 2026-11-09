@@ -27,7 +27,7 @@ public class ResultsController : Controller
     {
         var ev = await FindOwnedEventAsync(eventId);
         if (ev == null) return NotFound();
-        return View(await BuildViewModelAsync(ev));
+        return View("Capture", await BuildViewModelAsync(ev));
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -70,7 +70,7 @@ public class ResultsController : Controller
             .Where(r => r.ParticipantId == userId)
             .OrderByDescending(r => r.Event!.Date)
             .ToListAsync();
-        return View(results);
+        return View("MyResults", results);
     }
 
     private Task<Event?> FindOwnedEventAsync(int eventId)

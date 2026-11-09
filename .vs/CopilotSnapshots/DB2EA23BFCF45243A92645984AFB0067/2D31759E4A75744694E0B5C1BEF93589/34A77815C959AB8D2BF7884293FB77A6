@@ -1,0 +1,109 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RaceDay.Data;
+using RaceDay.Models;
+using RaceDay.Models.ViewModels;
+
+
+namespace RaceDay.Controllers;
+
+[Authorize]
+public class ResultsController : Controller
+{
+    private readonly ApplicationDbContext _db;
+    private readonly UserManager<ApplicationUser> _users;
+
+    public ResultsController(ApplicationDbContext db, UserManager<ApplicationUser> users)
+    {
+        _db = db;
+        _users = users;
+    }
+
+    // Organiser: capture times and positions for all enrolments of one of their events
+    [Authorize(Roles = "Admin,Organiser")]
+    public async Task<IActionResult> Capture(int eventId)
+    {
+        var ev = await FindOwnedEventAsync(eventId);
+        if (ev == null) return NotFound();
+        return View(await BuildViewModelAsync(ev));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Organiser")]
+    public async Task<IActionResult> Capture(CaptureResultsViewModel model)
+    {
+        var ev = await FindOwnedEventAsync(model.EventId);
+        if (ev == null) return NotFound();
+
+        foreach (var row in model.Rows)
+        {
+            var result = await _db.Results.FirstOrDefaultAsync(r =>
+                r.EventId == ev.Id && r.ParticipantId == row.ParticipantId);
+            if (row.FinishTime.HasValue || row.Position.HasValue)
+            {
+                result ??= new Result { EventId = ev.Id, ParticipantId = row.ParticipantId };
+                result.FinishTime = row.FinishTime;
+                result.Position = row.Position;
+                if (result.Id == 0) _db.Results.Add(result);
+            }
+            else if (result != null)
+            {
+                _db.Results.Remove(result);
+            }
+        }
+
+        await _db.SaveChangesAsync();
+        TempData["Success"] = "Results saved.";
+        return RedirectToAction("ForEvent", "Enrolments", new { eventId = ev.Id });
+    }
+
+    // Participant: my own results only
+    [Authorize(Roles = "Participant")]
+    public async Task<IActionResult> My()
+    {
+        var userId = _users.GetUserId(User);
+        var results = await _db.Results
+            .Include(r => r.Event)
+            .AsNoTracking()
+            .Where(r => r.ParticipantId == userId)
+            .OrderByDescending(r => r.Event!.Date)
+            .ToListAsync();
+        return View(results);
+    }
+
+    private Task<Event?> FindOwnedEventAsync(int eventId)
+    {
+        var userId = _users.GetUserId(User);
+        return _db.Events.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == eventId && e.OrganiserId == userId);
+    }
+
+    private async Task<CaptureResultsViewModel> BuildViewModelAsync(Event ev)
+    {
+        var rows = await _db.Enrolments
+            .Include(e => e.Participant)
+            .Include(e => e.Category)
+            .Where(e => e.EventId == ev.Id)
+            .Select(e => new ResultRow
+            {
+                ParticipantId = e.ParticipantId,
+                ParticipantName = e.Participant!.FirstName + " " + e.Participant.LastName,
+                CategoryName = e.Category!.Name
+            })
+            .ToListAsync();
+
+        var resultByParticipant = await _db.Results
+            .Where(r => r.EventId == ev.Id)
+            .ToDictionaryAsync(r => r.ParticipantId);
+        foreach (var row in rows.Where(r => resultByParticipant.ContainsKey(r.ParticipantId)))
+        {
+            var result = resultByParticipant[row.ParticipantId];
+            row.FinishTime = result.FinishTime;
+            row.Position = result.Position;
+        }
+
+        return new CaptureResultsViewModel { EventId = ev.Id, EventName = ev.Name, Rows = rows };
+    }
+}

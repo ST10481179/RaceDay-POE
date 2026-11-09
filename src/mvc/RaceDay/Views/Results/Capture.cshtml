@@ -1,0 +1,56 @@
+@model RaceDay.Models.ViewModels.CaptureResultsViewModel
+
+@{
+    ViewData["Title"] = "Capture Results";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Capture results: @Model.EventName</h1>
+    <a asp-controller="Enrolments" asp-action="ForEvent" asp-route-eventId="@Model.EventId" class="btn btn-outline-secondary">Back to enrolments</a>
+</div>
+
+<form asp-action="Capture" method="post">
+    <input asp-for="EventId" type="hidden" />
+
+    @if (Model.Rows.Count == 0)
+    {
+        <p class="text-muted">There are no enrolments for this event yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Participant</th>
+                        <th>Category</th>
+                        <th>Finish time</th>
+                        <th>Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.Rows[i].ParticipantName
+                                <input asp-for="Rows[i].ParticipantId" type="hidden" />
+                                <input asp-for="Rows[i].ParticipantName" type="hidden" />
+                                <input asp-for="Rows[i].CategoryName" type="hidden" />
+                            </td>
+                            <td>@Model.Rows[i].CategoryName</td>
+                            <td>
+                                <input type="time" step="1" name="Rows[@i].FinishTime"
+                                       value="@(Model.Rows[i].FinishTime?.ToString(@"hh\:mm\:ss"))" class="form-control" />
+                            </td>
+                            <td>
+                                <input type="number" min="1" name="Rows[@i].Position" value="@Model.Rows[i].Position" class="form-control" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary">Save results</button>
+    }
+</form>

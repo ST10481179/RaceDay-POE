@@ -1,0 +1,23 @@
+﻿namespace RaceDay.Models.ViewModels;
+
+public class CaptureResultsViewModel
+{
+    public int EventId { get; set; }
+
+    public string EventName { get; set; } = string.Empty;
+
+    public List<ResultRow> Rows { get; set; } = new();
+}
+
+public class ResultRow
+{
+    public string ParticipantId { get; set; } = string.Empty;
+
+    public string ParticipantName { get; set; } = string.Empty;
+
+    public string CategoryName { get; set; } = string.Empty;
+
+    public TimeSpan? FinishTime { get; set; }
+
+    public int? Position { get; set; }
+}

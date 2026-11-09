@@ -63,10 +63,6 @@ namespace RaceDay.Areas.Identity.Pages.Account
             [Display(Name = "Gender")]
             public Gender Gender { get; set; }
 
-            [Required]
-            [Display(Name = "Role")]
-            public string Role { get; set; } = "Participant";
-
             [Display(Name = "Profile image")]
             public IFormFile ProfileImage { get; set; }
 
@@ -86,8 +82,6 @@ namespace RaceDay.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
-
-        private static readonly string[] AllowedRoles = { "Participant", "Organiser" };
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -130,11 +124,7 @@ namespace RaceDay.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    var requestedRole = AllowedRoles.Contains(Input.Role, StringComparer.OrdinalIgnoreCase)
-                        ? Input.Role.Trim()
-                        : "Participant";
-
-                    var roleResult = await _userManager.AddToRoleAsync(user, requestedRole);
+                    var roleResult = await _userManager.AddToRoleAsync(user, "Participant");
                     if (!roleResult.Succeeded)
                     {
                         foreach (var error in roleResult.Errors)

@@ -20,10 +20,17 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-bottom: 0;
   background: linear-gradient(180deg, #f8fafc 0%, #eef6ff 100%);
   color: var(--race-dark);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body > .container {
+  flex: 1 0 auto;
 }
 
 .navbar {
@@ -93,6 +100,17 @@ h1, h2, h3, h4, h5, h6 {
 .event-card img {
   height: 190px;
   object-fit: cover;
+}
+
+.register-page {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.register-card {
+  border: 1px solid #dbeafe;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {

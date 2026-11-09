@@ -75,11 +75,11 @@ public class EventsController : Controller
             if (error != null) ModelState.AddModelError("bannerFile", error);
 
         }
+        ev.OrganiserId = _users.GetUserId(User)!;
+        ModelState.Remove(nameof(Event.OrganiserId));
         if (!ModelState.IsValid) return View(ev);
 
         BlobUploadResult? uploaded = null;
-
-        ev.OrganiserId = _users.GetUserId(User)!;
 
         try
         {
@@ -186,8 +186,16 @@ public class EventsController : Controller
             return RedirectToAction(nameof(Details), new { id });
         }
 
+        if (await _db.Results.AnyAsync(r => r.EventId == id))
+        {
+            TempData["Error"] = "This event has results and cannot be deleted.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
         var BlobName = ev.BannerBlobName;
-       _db.Events.Remove(ev); // categories are cascade-deleted
+        var categories = await _db.Categories.Where(c => c.EventId == id).ToListAsync();
+        _db.Categories.RemoveRange(categories);
+        _db.Events.Remove(ev);
         await _db.SaveChangesAsync();
         await _blob.DeleteAsync(BlobName);
 

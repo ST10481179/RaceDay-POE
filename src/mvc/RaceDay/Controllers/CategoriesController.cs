@@ -26,6 +26,7 @@ public class CategoriesController : Controller
         if (ev == null) return NotFound();
 
         ViewBag.Event = ev;
+        ViewBag.EventId = eventId;
         ViewBag.IsOwner = ev.OrganiserId == _users.GetUserId(User);
 
         var categories = await _db.Categories
