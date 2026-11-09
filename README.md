@@ -111,6 +111,22 @@ https://youtu.be/MBRmk7sk56k
 
    
 
+## Part 3 – Web Application Features
+- **Role-based access:** Organisers and participants have access to features according to their roles; administrators can manage user roles.
+- **Event management:** Organisers can create, view, edit, and delete their events, while users can browse event listings and details.
+- **Event banners:** Organisers can upload, replace, or remove event banner images. Images are validated and stored using Azure Blob Storage when configured, with local storage as a fallback.
+- **Event categories:** Organisers can add and manage categories for their events.
+- **Participant enrolments:** Participants can enrol in an upcoming event by selecting a category, view their enrolments, and withdraw before the event.
+- **Enrolment management:** Organisers can view participants and categories enrolled in their events.
+- **Results:** Organisers can record or update participant finish times and positions; participants can view their own results.
+- **User profiles:** Users can view and update their profile information.
+
+### Part 3 Video Presentation
+Unlisted YouTube link:  
+
+
+---
+
 ## Submission Notes
 - All planning documents are inside `/docs`
 - Minimum of 20 meaningful commits for Part 1
