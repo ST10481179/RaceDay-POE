@@ -36,6 +36,13 @@ namespace RaceDay.Models
         [Required]
         public EventType Type { get; set; }
 
+        [StringLength(500)]
+        [Display(Name = "Banner Image")]
+
+        public string? BannerImageUrl { get; set; }
+        [StringLength(200)]
+        public string? BannerBlobName { get; set; }
+
         [Required]
         public string OrganiserId { get; set; } = string.Empty;
 

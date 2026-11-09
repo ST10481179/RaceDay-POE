@@ -62,6 +62,7 @@ wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
 wwwroot\uploads\profiles\0958adc0-6fa1-49b3-8903-08e1de331cd4.png
+wwwroot\uploads\profiles\0ae93ac6-70ba-45b8-b7ee-af4b7c0222fc.png
 wwwroot\uploads\profiles\0d717254-65af-4475-bffd-72a7c291cf83.png
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\wwwroot\css\site.css
 C:\Users\tanki\OneDrive\Documents\GitHub\RaceDay-POE\src\api\RaceDay\wwwroot\favicon.ico

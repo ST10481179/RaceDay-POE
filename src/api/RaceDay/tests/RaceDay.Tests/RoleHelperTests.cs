@@ -1,80 +1,113 @@
-using System.Threading.Tasks;
-using Moq;
-using Xunit;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.VisualStudio.TestPlatform.Utilities.Helpers;
+using RaceDay.Data;
+using RaceDay.// RoleHelper.cs
 using Microsoft.AspNetCore.Identity;
 using RaceDay.Data;
-using RaceDay.Utils;
+using System.Threading.Tasks;
+
+namespace RaceDay.Utils
+{
+    public static class RoleHelper
+    {
+        public enum Destination
+        {
+            None,
+            Admin,
+            Participant,
+            Organiser
+        }
+
+        public static async Task<Destination> DetermineDestinationAsync(UserManager<ApplicationUser> userManager, ApplicationUser user)
+        {
+            if (userManager == null || user == null) return Destination.None;
+
+            if (await userManager.IsInRoleAsync(user, "Admin")) return Destination.Admin;
+            if (await userManager.IsInRoleAsync(user, "Participant")) return Destination.Participant;
+            if (await userManager.IsInRoleAsync(user, "Organiser")) return Destination.Organiser;
+
+            return Destination.None;
+        }
+    }
+};
+using System.Threading.Tasks;
+using Xunit;
 
 namespace RaceDay.Tests
 {
     public class RoleHelperTests
     {
-        private static UserManager<ApplicationUser> CreateUserManagerMock(Mock<IUserStore<ApplicationUser>> storeMock)
-        {
-            var mgr = new UserManager<ApplicationUser>(
-                storeMock.Object,
-                null, null, null, null, null, null, null, null);
-            return mgr;
-        }
+        private ApplicationUser MakeUser(string email) =>
+            new ApplicationUser { Email = email, UserName = email };
 
         [Fact]
-        public async Task DetermineDestinationAsync_Returns_Admin_When_In_Admin_Role()
+        public async Task Returns_Admin_When_In_Admin_Role()
         {
-            var user = new ApplicationUser { Email = "admin@example.com" };
+            var user = MakeUser("admin@example.com");
 
-            var storeMock = new Mock<IUserStore<ApplicationUser>>();
-            var userManager = CreateUserManagerMock(storeMock);
+            // Fake UserManager with only IsInRoleAsync implemented
+            var userManager = new FakeUserManager("Admin");
 
-            var umMock = new Mock<UserManager<ApplicationUser>>(storeMock.Object, null, null, null, null, null, null, null, null);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(true);
-
-            var dest = await RoleHelper.DetermineDestinationAsync(umMock.Object, user);
+            var dest = await RoleHelper.DetermineDestinationAsync(userManager, user);
 
             Assert.Equal(RoleHelper.Destination.Admin, dest);
         }
 
         [Fact]
-        public async Task DetermineDestinationAsync_Returns_Participant_When_In_Participant_Role()
+        public async Task Returns_Participant_When_In_Participant_Role()
         {
-            var user = new ApplicationUser { Email = "part@example.com" };
-            var storeMock = new Mock<IUserStore<ApplicationUser>>();
-            var umMock = new Mock<UserManager<ApplicationUser>>(storeMock.Object, null, null, null, null, null, null, null, null);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(false);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Participant")).ReturnsAsync(true);
+            var user = MakeUser("part@example.com");
+            var userManager = new FakeUserManager("Participant");
 
-            var dest = await RoleHelper.DetermineDestinationAsync(umMock.Object, user);
+            var dest = await RoleHelper.DetermineDestinationAsync(userManager, user);
 
             Assert.Equal(RoleHelper.Destination.Participant, dest);
         }
 
         [Fact]
-        public async Task DetermineDestinationAsync_Returns_Organiser_When_In_Organiser_Role()
+        public async Task Returns_Organiser_When_In_Organiser_Role()
         {
-            var user = new ApplicationUser { Email = "org@example.com" };
-            var storeMock = new Mock<IUserStore<ApplicationUser>>();
-            var umMock = new Mock<UserManager<ApplicationUser>>(storeMock.Object, null, null, null, null, null, null, null, null);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(false);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Participant")).ReturnsAsync(false);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Organiser")).ReturnsAsync(true);
+            var user = MakeUser("org@example.com");
+            var userManager = new FakeUserManager("Organiser");
 
-            var dest = await RoleHelper.DetermineDestinationAsync(umMock.Object, user);
+            var dest = await RoleHelper.DetermineDestinationAsync(userManager, user);
 
             Assert.Equal(RoleHelper.Destination.Organiser, dest);
         }
 
         [Fact]
-        public async Task DetermineDestinationAsync_Returns_None_When_No_Roles()
+        public async Task Returns_None_When_No_Roles()
         {
-            var user = new ApplicationUser { Email = "none@example.com" };
-            var storeMock = new Mock<IUserStore<ApplicationUser>>();
-            var umMock = new Mock<UserManager<ApplicationUser>>(storeMock.Object, null, null, null, null, null, null, null, null);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Admin")).ReturnsAsync(false);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Participant")).ReturnsAsync(false);
-            umMock.Setup(x => x.IsInRoleAsync(user, "Organiser")).ReturnsAsync(false);
+            var user = MakeUser("none@example.com");
+            var userManager = new FakeUserManager(); // no roles
 
-            var dest = await RoleHelper.DetermineDestinationAsync(umMock.Object, user);
+            var dest = await RoleHelper.DetermineDestinationAsync(userManager, user);
 
             Assert.Equal(RoleHelper.Destination.None, dest);
         }
     }
-}
+
+    // Simple fake UserManager that only cares about IsInRoleAsync
+    public class FakeUserManager : UserManager<ApplicationUser>
+    {
+        private readonly string _role;
+
+        public FakeUserManager(string role = null)
+            : base(new FakeUserStore(),
+                   null, null, null, null, null, null, null, null)
+        {
+            _role = role;
+        }
+
+        public override Task<bool> IsInRoleAsync(ApplicationUser user, string role)
+        {
+            return Task.FromResult(_role == role);
+        }
+    }
+
+    public class FakeUserStore : IUserStore<ApplicationUser>
+    {
+        public void Dispose() { }
+        public Task<string> GetUserIdAsync(ApplicationUser user, System.Threading.CancellationToken cancellationToken) => Task.FromResult(user.Id);
+        public Task<string> GetUserNameAsync(ApplicationUser user, System.Threading.CancellationToken cancellationToken) => Task.FromResult(user.UserName);
+        public
