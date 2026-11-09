@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using RaceDay.Data;
 using RaceDay.Models.Interface;
+using RaceDay.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,11 +22,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IProfileImageService, ProfileImageService>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
-//  Swagger services
+// Swagger services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
-
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
@@ -37,7 +38,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-//  Swagger middleware
+// Swagger middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
