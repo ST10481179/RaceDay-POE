@@ -133,7 +133,4 @@ Unlisted YouTube link:
 
 ---
 
-## Submission Notes
-- All planning documents are inside `/docs`
-- Minimum of 20 meaningful commits for Part 1
-- SQL script runs cleanly on a fresh SQL Server instance
+
