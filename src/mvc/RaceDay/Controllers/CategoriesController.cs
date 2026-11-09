@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DemoProject.Data;
-using DemoProject.Models;
+using RaceDay.Data;
+using RaceDay.Models;
 
-namespace DemoProject.Controllers;
+namespace RaceDay.Controllers;
 
 [Authorize]
 public class CategoriesController : Controller
@@ -31,7 +31,7 @@ public class CategoriesController : Controller
         var categories = await _db.Categories
             .AsNoTracking()
             .Where(c => c.EventId == eventId)
-            .OrderBy(c => c.Kind).ThenBy(c => c.Name)
+            .OrderBy(c => c.Name)
             .ToListAsync();
         return View(categories);
     }
@@ -48,7 +48,7 @@ public class CategoriesController : Controller
 
     [HttpPost, ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,Organiser")]
-    public async Task<IActionResult> Create([Bind("EventId,Name,Kind")] Category category)
+    public async Task<IActionResult> Create([Bind("EventId,Name,MinAge,MaxAge,MinDistanceKm,MaxDistanceKm")] Category category)
     {
         var ev = await FindOwnedEventAsync(category.EventId);
         if (ev == null) return NotFound();
@@ -85,7 +85,7 @@ public class CategoriesController : Controller
         var category = await FindOwnedCategoryAsync(id);
         if (category == null) return NotFound();
 
-        var updated = await TryUpdateModelAsync(category, "", c => c.Name, c => c.Kind);
+        var updated = await TryUpdateModelAsync(category, "", c => (object)c.Name);
 
         if (updated && await _db.Categories.AnyAsync(c =>
                 c.EventId == category.EventId && c.Name == category.Name && c.Id != id))

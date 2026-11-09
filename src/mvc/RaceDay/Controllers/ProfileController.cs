@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RaceDay.Data;
+using RaceDay.Models.Interface;
 
 namespace RaceDay.Controllers
 {
@@ -10,10 +11,12 @@ namespace RaceDay.Controllers
     public class ProfileController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IProfileImageService _images;
 
-        public ProfileController(UserManager<ApplicationUser> userManager)
+        public ProfileController(UserManager<ApplicationUser> userManager, IProfileImageService images)
         {
             _userManager = userManager;
+            _images = images;
         }
 
         public async Task<IActionResult> Edit()
@@ -25,21 +28,41 @@ namespace RaceDay.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("Id,FirstName,LastName,Gender,ProfileImagePath")] ApplicationUser input)
+        public async Task<IActionResult> Edit([Bind("Id,FirstName,LastName,Gender")] ApplicationUser input, IFormFile? profileImage)
         {
             var user = await _userManager.FindByIdAsync(input.Id);
             if (user == null) return NotFound();
+
             user.FirstName = input.FirstName;
             user.LastName = input.LastName;
             user.Gender = input.Gender;
-            user.ProfileImagePath = input.ProfileImagePath;
+
+            if (profileImage is { Length: > 0 })
+            {
+                var savedPath = await _images.SaveAsync(profileImage);
+                if (savedPath == null)
+                {
+                    ModelState.AddModelError("profileImage", "Only JPG, PNG, WEBP images up to 2 MB are allowed.");
+                    return View(user);
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.ProfileImagePath))
+                {
+                    _images.Delete(user.ProfileImagePath);
+                }
+
+                user.ProfileImagePath = savedPath;
+            }
+
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 foreach (var e in result.Errors) ModelState.AddModelError("", e.Description);
-                return View(input);
+                return View(user);
             }
-            return RedirectToAction("Index","Home");
+
+            TempData["Success"] = "Your profile has been updated.";
+            return RedirectToAction("Index", "Home");
         }
     }
 }

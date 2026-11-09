@@ -63,6 +63,10 @@ namespace RaceDay.Areas.Identity.Pages.Account
             [Display(Name = "Gender")]
             public Gender Gender { get; set; }
 
+            [Required]
+            [Display(Name = "Role")]
+            public string Role { get; set; } = "Participant";
+
             [Display(Name = "Profile image")]
             public IFormFile ProfileImage { get; set; }
 
@@ -83,6 +87,8 @@ namespace RaceDay.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
+        private static readonly string[] AllowedRoles = { "Participant", "Organiser" };
+
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
@@ -98,7 +104,7 @@ namespace RaceDay.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 // 1. Save the image (if one was uploaded)
-                string imagePath = null;
+                string imagePath = string.Empty;
                 if (Input.ProfileImage is { Length: > 0 })
                 {
                     imagePath = await _images.SaveAsync(Input.ProfileImage);
@@ -124,17 +130,18 @@ namespace RaceDay.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    //Assign the seeded role to the new user
-                    var roleResult = await _userManager.AddToRoleAsync(user, "Participant");
+                    var requestedRole = AllowedRoles.Contains(Input.Role, StringComparer.OrdinalIgnoreCase)
+                        ? Input.Role.Trim()
+                        : "Participant";
+
+                    var roleResult = await _userManager.AddToRoleAsync(user, requestedRole);
                     if (!roleResult.Succeeded)
                     {
                         foreach (var error in roleResult.Errors)
                         {
                             _logger.LogError("Failed to assign role: {Error}", error.Description);
-
                         }
 
-                        //Roll back to the user is not left without role
                         await _userManager.DeleteAsync(user);
                         ModelState.AddModelError(string.Empty, "Unable to complete registration. Please try again");
                         return Page();

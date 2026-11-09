@@ -3,13 +3,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DemoProject.Data;
-using DemoProject.Models;
-using DemoProject.Models.ViewModels;
+using RaceDay.Data;
+using RaceDay.Models;
 
-namespace DemoProject.Controllers;
+namespace RaceDay.Controllers;
 
 [Authorize]
 public class EnrolmentsController : Controller
@@ -38,15 +36,16 @@ public class EnrolmentsController : Controller
             return RedirectToAction("Details", "Events", new { id = eventId });
         }
 
-        return View(BuildViewModel(ev, null));
+        ViewBag.EventId = eventId;
+        return View(ev.Categories ?? Enumerable.Empty<Category>());
     }
 
     [HttpPost, ValidateAntiForgeryToken]
     [Authorize(Roles = "Participant")]
-    public async Task<IActionResult> Create(EnrolViewModel model)
+    public async Task<IActionResult> Create(int eventId, int categoryId)
     {
         var ev = await _db.Events.Include(e => e.Categories).AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == model.EventId);
+            .FirstOrDefaultAsync(e => e.Id == eventId);
         if (ev == null) return NotFound();
 
         var problem = await ValidateCanEnrolAsync(ev);
@@ -57,17 +56,21 @@ public class EnrolmentsController : Controller
         }
 
         // The chosen category must belong to THIS event
-        if (model.CategoryId == null || !ev.Categories.Any(c => c.Id == model.CategoryId))
-            ModelState.AddModelError(nameof(model.CategoryId), "Please select a valid category for this event.");
+        if (!ev.Categories!.Any(c => c.Id == categoryId))
+            ModelState.AddModelError(nameof(categoryId), "Please select a valid category for this event.");
 
-        if (!ModelState.IsValid) return View(BuildViewModel(ev, model.CategoryId));
+        if (!ModelState.IsValid)
+        {
+            ViewBag.EventId = eventId;
+            return View(ev.Categories);
+        }
 
         _db.Enrolments.Add(new Enrolment
         {
             EventId = ev.Id,
-            CategoryId = model.CategoryId!.Value,
+            CategoryId = categoryId,
             ParticipantId = _users.GetUserId(User)!,
-            EnrolledOn = DateTime.UtcNow
+            EnrolledAt = DateTime.UtcNow
         });
         await _db.SaveChangesAsync();
 
@@ -83,7 +86,6 @@ public class EnrolmentsController : Controller
         var enrolments = await _db.Enrolments
             .Include(e => e.Event)
             .Include(e => e.Category)
-            .Include(e => e.Result)
             .AsNoTracking()
             .Where(e => e.ParticipantId == userId)
             .OrderBy(e => e.Event!.Date)
@@ -98,11 +100,11 @@ public class EnrolmentsController : Controller
     {
         var userId = _users.GetUserId(User);
         var enrolment = await _db.Enrolments
-            .Include(e => e.Event).Include(e => e.Result)
+            .Include(e => e.Event)
             .FirstOrDefaultAsync(e => e.Id == id && e.ParticipantId == userId);
         if (enrolment == null) return NotFound();
 
-        if (enrolment.Result != null || enrolment.Event!.Date <= DateTime.Now)
+        if (enrolment.Event!.Date <= DateTime.Now)
         {
             TempData["Error"] = "You can no longer withdraw from this event.";
             return RedirectToAction(nameof(My));
@@ -146,15 +148,4 @@ public class EnrolmentsController : Controller
         return null;
     }
 
-    private static EnrolViewModel BuildViewModel(Event ev, int? selectedCategoryId) => new()
-    {
-        EventId = ev.Id,
-        EventName = ev.Name,
-        EventDate = ev.Date,
-        Location = ev.Location,
-        CategoryId = selectedCategoryId,
-        Categories = ev.Categories
-            .OrderBy(c => c.Kind).ThenBy(c => c.Name)
-            .Select(c => new SelectListItem($"{c.Name} ({c.Kind})", c.Id.ToString()))
-    };
 }

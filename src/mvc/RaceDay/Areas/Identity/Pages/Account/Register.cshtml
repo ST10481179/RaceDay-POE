@@ -32,6 +32,15 @@
             </div>
 
             <div class="mb-3">
+                <label asp-for="Input.Role" class="form-label"></label>
+                <select asp-for="Input.Role" class="form-select">
+                    <option value="Participant">Participant</option>
+                    <option value="Organiser">Organiser</option>
+                </select>
+                <span asp-validation-for="Input.Role" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
                 <label asp-for="Input.ProfileImage" class="form-label"></label>
                 <input asp-for="Input.ProfileImage" type="file" accept="image/*" class="form-control" />
                 <span asp-validation-for="Input.ProfileImage" class="text-danger"></span>

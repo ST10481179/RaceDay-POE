@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Organiser Dashboard";
+}
+
+<h1 class="mb-3">Organiser Dashboard</h1>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">My Events</div>
+                <h3 class="mt-2 mb-0">@ViewBag.EventCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Total Enrolments</div>
+                <h3 class="mt-2 mb-0">@ViewBag.TotalEnrolments</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Upcoming Events</div>
+                <h3 class="mt-2 mb-0">@ViewBag.UpcomingCount</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-controller="Events" asp-action="Create" class="btn btn-primary">Create new event</a>
+    <a asp-controller="Events" asp-action="Index" class="btn btn-outline-secondary ms-2">Manage events</a>
+</div>

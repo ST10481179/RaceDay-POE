@@ -25,5 +25,7 @@ namespace RaceDay.Models
         public Event? Event { get; set; }
 
         public ICollection<Enrolment>? Enrolments { get; set; }
+        [NotMapped]
+        public object Kind { get; internal set; }
     }
 }

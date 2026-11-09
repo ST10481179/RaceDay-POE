@@ -34,14 +34,7 @@ namespace RaceDay.Models
         public double DistanceKm { get; set; }
 
         [Required]
-        public EventType Type { get; set; }
-
-        [StringLength(500)]
-        [Display(Name = "Banner Image")]
-
-        public string? BannerImageUrl { get; set; }
-        [StringLength(200)]
-        public string? BannerBlobName { get; set; }
+        public EventType EventType { get; set; }
 
         [Required]
         public string OrganiserId { get; set; } = string.Empty;
@@ -54,5 +47,10 @@ namespace RaceDay.Models
         public ICollection<Enrolment>? Enrolments { get; set; }
 
         public ICollection<Result>? Results { get; set; }
+
+        public string? BannerImageUrl { get; set; }
+
+        public string? BannerBlobName { get; set; }
     }
 }
+
