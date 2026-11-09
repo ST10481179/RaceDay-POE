@@ -1,0 +1,48 @@
+@model IEnumerable<RaceDay.Models.Category>
+
+@{
+    ViewData["Title"] = "Categories";
+    var eventId = ViewBag.EventId as int? ?? 0;
+}
+
+<h1>Categories</h1>
+
+<p>
+    @if (User.IsInRole("Organiser") || User.IsInRole("Admin"))
+    {
+        @Html.ActionLink("Create Category", "Create", new { eventId = eventId }, new { @class = "btn btn-primary" })
+    }
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Min Age</th>
+            <th>Max Age</th>
+            <th>Min Distance</th>
+            <th>Max Distance</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.MinAge</td>
+            <td>@item.MaxAge</td>
+            <td>@item.MinDistanceKm</td>
+            <td>@item.MaxDistanceKm</td>
+            <td>
+                @if (User.IsInRole("Organiser") || User.IsInRole("Admin"))
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                    @: |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

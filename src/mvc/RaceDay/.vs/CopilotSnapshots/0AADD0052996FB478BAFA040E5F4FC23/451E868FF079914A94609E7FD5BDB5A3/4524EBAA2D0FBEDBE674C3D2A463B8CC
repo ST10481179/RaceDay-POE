@@ -1,0 +1,52 @@
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace RaceDay.Data
+{
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Keep explicit constructor for clarity and compatibility")]
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<RaceDay.Models.Event>? Events { get; set; }
+        public DbSet<RaceDay.Models.Category>? Categories { get; set; }
+        public DbSet<RaceDay.Models.Enrolment>? Enrolments { get; set; }
+        public DbSet<RaceDay.Models.Result>? Results { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            // Customize the ASP.NET Identity model and override the defaults if needed.
+            // Add your customizations after calling base.OnModelCreating(builder);
+            builder.Entity<ApplicationUser>()
+                .Property(u => u.Gender)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+
+            // Prevent multiple cascade delete paths involving ApplicationUser -> Event -> Result
+            builder.Entity<RaceDay.Models.Event>()
+                .HasOne(e => e.Organiser)
+                .WithMany()
+                .HasForeignKey(e => e.OrganiserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Prevent cascade delete from ApplicationUser to Result via Participant
+            builder.Entity<RaceDay.Models.Result>()
+                .HasOne(r => r.Participant)
+                .WithMany()
+                .HasForeignKey(r => r.ParticipantId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Prevent cascade delete from ApplicationUser to Enrolment via Participant
+            builder.Entity<RaceDay.Models.Enrolment>()
+                .HasOne(e => e.Participant)
+                .WithMany()
+                .HasForeignKey(e => e.ParticipantId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }","explanation":"Configure relationships to avoid multiple cascade delete paths that SQL Server disallows (set delete behavior to Restrict on user-owned FKs)."}```】ERROR Could not replace string: oldString did not match file contents exactly.}```Hmm replacement failed — maybe whitespace or different newlines? Need to get exact oldString. Let's read file again to copy exact. Use read_file to fetch file content. We already did; but include exact including leading spaces count. Let's open file content raw. We saw earlier. Let's get it again to ensure matching. Use read_file. Already loaded, but ensure exact copy. I'll include exact whitespace. Show file content in tool output had triple backticks; but replace_string_in_file uses file content without the surrounding code block. I need exact string matching including indentation and newline style 
+ used. The oldString I used might not match due to different spaces. Let's fetch file again via read_file and copy exact portion. We have read earlier; the method had 8 spaces indent? Let's open again. It shows indentation of 8 spaces. My oldString likely matched. But error occurred. Let's print file content? read_file outputs code block with triple backticks. But oldString must match exact including carriage returns. Maybe file uses 
+ only. The tool required exact match. Simpler: use multi_replace_string_in_file? No. Better to use replace_string_in_file but pick smaller unique snippet to replace: replace the builder.Entity<ApplicationUser>()... block only, keeping same method. That block is unique. Let's prepare oldString being from 
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "RaceDay API",
+    "description": "API for managing RaceDay events, authentication, and participants",
+    "version": "v1"
+  },
+  "paths": { },
+  "components": { }
+}

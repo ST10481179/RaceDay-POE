@@ -1,0 +1,53 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace RaceDay.Migrations
+{
+    public partial class RemoveEventForeignKeys : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            // Drop foreign keys that reference Events to avoid multiple cascade paths
+            migrationBuilder.DropForeignKey(
+                name: "FK_Categories_Events_EventId",
+                table: "Categories");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Enrolments_Events_EventId",
+                table: "Enrolments");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Results_Events_EventId",
+                table: "Results");
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            // Recreate the foreign keys with Restrict to prevent cascade delete paths
+            migrationBuilder.AddForeignKey(
+                name: "FK_Categories_Events_EventId",
+                table: "Categories",
+                column: "EventId",
+                principalTable: "Events",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Enrolments_Events_EventId",
+                table: "Enrolments",
+                column: "EventId",
+                principalTable: "Events",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Results_Events_EventId",
+                table: "Results",
+                column: "EventId",
+                principalTable: "Events",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+        }
+    }
+}

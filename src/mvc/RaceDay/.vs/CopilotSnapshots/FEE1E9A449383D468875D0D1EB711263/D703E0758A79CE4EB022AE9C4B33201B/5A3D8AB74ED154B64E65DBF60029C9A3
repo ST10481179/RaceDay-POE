@@ -1,0 +1,70 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RaceDay.Data;
+using RaceDay.Models;
+
+namespace RaceDay.Controllers
+{
+    [Authorize]
+    public class ResultsController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public ResultsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+
+        // Organiser adds results for an event
+        [Authorize(Roles = "Organizer,Admin")]
+        public async Task<IActionResult> Manage(int eventId)
+        {
+            var @event = await _context.Events!.FindAsync(eventId);
+            if (@event == null) return NotFound();
+            if (@event.OrganizerId != _user_manager.GetUserId(User) && !User.IsInRole("Admin")) return Forbid();
+
+            var enrolments = await _context.Enrolments!.Include(e => e.Participant).Where(e => e.EventId == eventId).ToListAsync();
+            ViewBag.Event = @event;
+            return View(enrolments);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Organizer,Admin")]
+        public async Task<IActionResult> UpdateResult(int eventId, int participantId, TimeSpan? finish, int? position)
+        {
+            var @event = await _context.Events!.FindAsync(eventId);
+            if (@event == null) return NotFound();
+            if (@event.OrganizerId != _user_manager.GetUserId(User) && !User.IsInRole("Admin")) return Forbid();
+
+            var enrol = await _context.Enrolments!.Include(e => e.Participant).FirstOrDefaultAsync(e => e.EventId == eventId && e.ParticipantId == participantId.ToString());
+            if (enrol == null) return NotFound();
+
+            var result = await _context.Results!.FirstOrDefaultAsync(r => r.EventId == eventId && r.ParticipantId == enrol.ParticipantId);
+            if (result == null)
+            {
+                result = new Result { EventId = eventId, ParticipantId = enrol.ParticipantId, FinishTime = finish, Position = position };
+                _context.Results!.Add(result);
+            }
+            else
+            {
+                result.FinishTime = finish;
+                result.Position = position;
+                _context.Results.Update(result);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Manage", new { eventId });
+        }
+
+        // Participants view their results
+        public async Task<IActionResult> MyResults()
+        {
+            var userId = _userManager.GetUserId(User);
+            var results = await _context.Results!.Include(r => r.Event).Where(r => r.ParticipantId == userId).ToListAsync();
+            return View(results);
+        }
+    }
+}

@@ -1,0 +1,126 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using RaceDay.Data;
+using RaceDay.Models.Interface;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IProfileImageService, ProfileImageService>();
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        db.Database.Migrate(); // Apply any pending migrations to the database
+    }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("PendingModelChangesWarning") || ex.Message.Contains("pending changes"))
+    {
+        // Log a helpful error and continue startup so the app doesn't crash immediately.
+        var logger = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<Program>>();
+        logger.LogError(ex, "Database migration skipped: pending model changes detected. Create a new EF Core migration (dotnet ef migrations add <Name>) and apply it before automatic migration. See https://aka.ms/efcore-docs-pending-changes.");
+    }
+
+    var rolmanager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new[] { "Admin", "Organiser", "Participant" };
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+
+    foreach (var role in roles)
+    {
+        if (!await rolmanager.RoleExistsAsync(role))
+        {
+            await rolmanager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // If an older "User" role exists, migrate its members to "Organiser" and remove the old role.
+    if (await rolmanager.RoleExistsAsync("User"))
+    {
+        // ensure Organiser exists
+        if (!await rolmanager.RoleExistsAsync("Organiser"))
+        {
+            await rolmanager.CreateAsync(new IdentityRole("Organiser"));
+        }
+
+        var usersInOldRole = await userManager.GetUsersInRoleAsync("User");
+        foreach (var u in usersInOldRole)
+        {
+            // add to Organiser and remove from User
+            if (!await userManager.IsInRoleAsync(u, "Organiser"))
+            {
+                await userManager.AddToRoleAsync(u, "Organiser");
+            }
+            await userManager.RemoveFromRoleAsync(u, "User");
+        }
+
+        var oldRole = await rolmanager.FindByNameAsync("User");
+        if (oldRole != null)
+        {
+            await rolmanager.DeleteAsync(oldRole);
+        }
+    }
+    var useerManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    string email = "admin@example.com";
+    string password = "Admin@123"; // Ensure this meets your password
+
+    if(await userManager.FindByEmailAsync(email) == null)
+    {
+        var user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true, // Set to true if you want to bypass email confirmation
+            ProfileImagePath = string.Empty // Ensure non-null value for DB insert
+        };
+
+        await userManager.CreateAsync(user,password);
+        await userManager.AddToRoleAsync(user, "Admin");
+    }","explanation":"Set ProfileImagePath explicitly on new ApplicationUser to avoid NULL being sent to database for non-nullable column."}   }   
+
+  }
+
+
+
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
+app.MapRazorPages()
+   .WithStaticAssets();
+
+app.Run();

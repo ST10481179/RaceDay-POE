@@ -1,0 +1,27 @@
+@model IEnumerable<RaceDay.Models.Result>
+
+@{
+    ViewData["Title"] = "My Results";
+}
+
+<h1>My Results</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Finish Time</th>
+            <th>Position</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.Event?.Name</td>
+            <td>@(item.FinishTime?.ToString())</td>
+            <td>@item.Position</td>
+        </tr>
+    }
+    </tbody>
+</table>

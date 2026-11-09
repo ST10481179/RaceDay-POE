@@ -1,0 +1,28 @@
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace RaceDay.Data
+{
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<RaceDay.Models.Event>? Events { get; set; }
+        public DbSet<RaceDay.Models.Category>? Categories { get; set; }
+        public DbSet<RaceDay.Models.Enrolment>? Enrolments { get; set; }
+        public DbSet<RaceDay.Models.Result>? Results { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            // Customize the ASP.NET Identity model and override the defaults if needed.
+            // Add your customizations after calling base.OnModelCreating(builder);
+            builder.Entity<ApplicationUser>()
+                .Property(u => u.Gender)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+        }
+    }
+}

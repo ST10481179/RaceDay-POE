@@ -1,0 +1,22 @@
+@model IEnumerable<RaceDay.Models.Category>
+
+@{
+    ViewData["Title"] = "Enrol in Event";
+    var eventId = ViewBag.EventId as int? ?? 0;
+}
+
+<h1>Enrol in Event</h1>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" name="eventId" value="@eventId" />
+    <div class="mb-3">
+        <label class="form-label">Select Category</label>
+        <select name="categoryId" class="form-select">
+            @foreach(var c in Model)
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Enrol</button>
+</form>

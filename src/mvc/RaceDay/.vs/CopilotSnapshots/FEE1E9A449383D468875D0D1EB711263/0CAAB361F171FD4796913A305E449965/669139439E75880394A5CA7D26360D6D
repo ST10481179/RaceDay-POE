@@ -1,0 +1,28 @@
+﻿@model IEnumerable<RaceDay.Models.Enrolment>
+
+@{
+    ViewData["Title"] = "Enrolments";
+    var @event = ViewBag.Event as RaceDay.Models.Event;
+}
+
+<h1>Enrolments for @@event?.Name</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Participant</th>
+            <th>Category</th>
+            <th>Enrolled At</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.Participant?.FullName ?? item.Participant?.UserName</td>
+            <td>@item.Category?.Name</td>
+            <td>@item.EnrolledAt.ToString("yyyy-MM-dd HH:mm")</td>
+        </tr>
+    }
+    </tbody>
+</table>
