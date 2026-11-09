@@ -126,6 +126,7 @@ https://youtu.be/MBRmk7sk56k
 
 ![.NET CI](https://github.com/ST10481179/RaceDay-POE/actions/workflows/ci.yml/badge.svg)
 
+![Part 3 screenshot](docs/Screenshot%202026-11-09%20223847.png)
 
 ### Part 3 Video Presentation
 Unlisted YouTube link:  
